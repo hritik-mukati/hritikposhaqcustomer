@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "340001960799",
+    "firebase_url": "https://poshaq-customer.firebaseio.com",
+    "project_id": "poshaq-customer",
+    "storage_bucket": "poshaq-customer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340001960799:android:6a9b9f64b0e5319195bcea",
+        "android_client_info": {
+          "package_name": "com.poshaq.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340001960799-6ipk99am2u2s61cmop7rm6pkq9q2kj5i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poshaq.customer",
+            "certificate_hash": "414ce2971d170f210158a3dc211c66f91649b9f0"
+          }
+        },
+        {
+          "client_id": "340001960799-9u66p8nm1b7371a5ijgblbmfuqeaejpn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poshaq.customer",
+            "certificate_hash": "6906e0aa51c76cb061c78406a1378cfb2e63741b"
+          }
+        },
+        {
+          "client_id": "340001960799-bckg9ug6i0diofj9qv6knhoe1ttrgqpc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYtHKIWT4505moXqQ5hAinFYa4_WyZoxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340001960799-bckg9ug6i0diofj9qv6knhoe1ttrgqpc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
