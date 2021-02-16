@@ -346,7 +346,7 @@ class _MyCartState extends State<MyCart> {
                                       RaisedButton(
                                         child: Text("Yes"),
                                         onPressed: (){
-                                          Navigator.of(context).pop();
+                                          // Navigator.of(context).pop();
                                           remove_from_cart(index.toString(),login?cart[index]['cart_id'].toString():"0");
                                         },
                                       ),

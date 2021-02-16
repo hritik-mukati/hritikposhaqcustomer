@@ -188,7 +188,7 @@ class _DetailedState extends State<Detailed> {
       print(response.body);
       var res = json.decode(response.body);
       if (res['status'] == 2) {
-        getProducts();
+        // getProducts();
       } else {
         Fluttertoast.showToast(msg: "Error Occured");
         setState(() {
@@ -213,7 +213,7 @@ class _DetailedState extends State<Detailed> {
       print(response.body);
       var res = json.decode(response.body);
       if (res['status'] == 2) {
-        getProducts();
+        // getProducts();
       } else {
         Fluttertoast.showToast(msg: "Error Occured");
         setState(() {
@@ -542,9 +542,9 @@ class _DetailedState extends State<Detailed> {
                                           child: Padding(
                                             padding: const EdgeInsets.all(10.0),
                                             child: Text(
-                                                stocke == "1"
+                                                sel_size!=null?stocke == "1"
                                                     ? "In Stock"
-                                                    : "Out Stock",
+                                                    : "Out Stock":" ",
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                                 style: TextStyle(
@@ -1141,10 +1141,14 @@ class _DetailedState extends State<Detailed> {
                                         height: 50,
                                         child: IconButton(
                                           onPressed: () {
-                                            add_wish_list();
-                                            setState(() {
-                                              wishbtn = true;
-                                            });
+                                            if(sel_size!=null){
+                                              add_wish_list();
+                                              setState(() {
+                                                wishbtn = true;
+                                              });
+                                            }else{
+                                              Fluttertoast.showToast(msg: "Select Size First!");
+                                            }
                                           },
                                           icon: Icon(
                                             wishbtn
@@ -1320,7 +1324,8 @@ class _DetailedState extends State<Detailed> {
           }
         });
       } catch (e) {
-        Fluttertoast.showToast(msg: e.toString());
+        // Fluttertoast.showToast(msg: e.toString());
+        print(e.toString());
       }
       print("Add to Wishlist");
     }

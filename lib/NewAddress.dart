@@ -350,7 +350,15 @@ class _NewAddressState extends State<NewAddress> {
                     _text6.text.isEmpty ? _validate6 = true : _validate6 = false;
                   });
                   print(flat_no+","+area+" "+mobile+"  "+city+" "+pincode);
-                  addaddress(name,flat_no,area,mobile,city,pincode);
+                  if(_text6.text.length == 6){
+                    if(_text4.text.length == 10){
+                      addaddress(name,flat_no,area,mobile,city,pincode);
+                    }else{
+                      Fluttertoast.showToast(msg: "Mobile No is not correct!");
+                    }
+                  }else{
+                    Fluttertoast.showToast(msg: "PinCode is not correct!");
+                  }
                 },
                 elevation: 3,
                 child: Text("Add",style: TextStyle(color: Colors.white,fontSize:  ScreenUtil().setSp(20)),),

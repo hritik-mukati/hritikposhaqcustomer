@@ -1156,24 +1156,24 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(
               width: width,
               height: height / 3.5,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 2, bottom: 0.0),
-                child: getimg
-                    ? Carousel(
-                        boxFit: BoxFit.fill,
-                        images: imageList,
-                        autoplay: true,
-                        showIndicator: true,
-                        dotSize: 5.0,
-                        dotSpacing: 20.0,
-                        dotBgColor: Constants.ACCENT_COLOR,
-                        indicatorBgPadding: 0.0,
-                        dotColor: Constants.PRIMARY_COLOR,
-                      )
-                    : Center(
-                        child: ProgressDailog().Progress(context),
-                      ),
-              ),
+              // child: Padding(
+              //   padding: const EdgeInsets.only(top: 2, bottom: 0.0),
+              //   child: getimg
+              //       ? Carousel(
+              //           boxFit: BoxFit.fill,
+              //           images: imageList,
+              //           autoplay: true,
+              //           showIndicator: true,
+              //           dotSize: 5.0,
+              //           dotSpacing: 20.0,
+              //           dotBgColor: Constants.ACCENT_COLOR,
+              //           indicatorBgPadding: 0.0,
+              //           dotColor: Constants.PRIMARY_COLOR,
+              //         )
+              //       : Center(
+              //           child: ProgressDailog().Progress(context),
+              //         ),
+              // ),
             ),
             Center(
                 child: Padding(

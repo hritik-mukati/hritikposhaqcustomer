@@ -30,9 +30,8 @@ class Constants {
 class API {
   static final String key = "abc";
 
-  // static final String BaseUrl= "https://www.saffronitsystems.com/dproject/index.php/";
-  static final String BaseUrl =
-      "https://www.saffronitsystems.com/dproject_dev/index.php/";
+  static final String BaseUrl= "https://www.saffronitsystems.com/dproject/index.php/";
+  // static final String BaseUrl ="https://www.saffronitsystems.com/dproject_dev/index.php/";
 
   //Dashboard
   static var fetchbanner = BaseUrl + "Admin/fetchInfoBanner";
