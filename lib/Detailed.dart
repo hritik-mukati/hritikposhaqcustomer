@@ -98,7 +98,7 @@ class _DetailedState extends State<Detailed> {
   List<String> sizes = new List<String>();
   bool data = false, wishbtn = false;
   Future<void> getProducts() async {
-    // try{
+    try{
     print("Product Id:  " + widget.p_id);
     http.Response response = await http.post(API.fetch_detailed, body: {
       'authkey': API.key,
@@ -154,13 +154,13 @@ class _DetailedState extends State<Detailed> {
         loding = true;
       }
     });
-    //  } catch(e){
-    //    setState(() {
-    //      loding = true;
-    //      data = true;
-    //    });
-    //    Fluttertoast.showToast(msg: e.toString(),backgroundColor: Constants.PRIMARY_COLOR);
-    // }
+     } catch(e){
+       setState(() {
+         loding = true;
+         data = true;
+       });
+       Fluttertoast.showToast(msg: "Error In Product Loading!",backgroundColor: Constants.PRIMARY_COLOR);
+    }
   }
 
   onchange_color(int index) {
@@ -223,7 +223,7 @@ class _DetailedState extends State<Detailed> {
       }
     });
   }
-
+  var Custom_cart;
   String customer_id;
   bool login = false;
   getSp() async {
@@ -235,9 +235,20 @@ class _DetailedState extends State<Detailed> {
     cart_color = prefs.getString('cart_color') ?? "0";
     cart_size = prefs.getString('cart_size') ?? "0";
     cart_size_name = prefs.getString('cart_size_name') ?? "0";
+    Custom_cart = prefs.getString('Custom_cart') ?? [];
+    print(Custom_cart);
+    if(Custom_cart.length!=0){
+      Custom_cart = jsonDecode(Custom_cart);
+    }
     getProducts();
   }
-
+  getCustomCart()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      Custom_cart = prefs.getString('Custom_cart') ?? [];
+    });
+    print(Custom_cart);
+  }
   double heightAppBar = 450.0;
   @override
   void initState() {
@@ -448,7 +459,7 @@ class _DetailedState extends State<Detailed> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => MyCart()));
+                                        builder: (context) => MyCart())).then((value) => login?print(""):getCustomCart());
                               },
                             ),
                           ],
@@ -1216,25 +1227,41 @@ class _DetailedState extends State<Detailed> {
         subject: "dfdf",
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
-
   String cart_data = "0",
       cart_color = "0",
       cart_size = "0",
       cart_size_name = "0";
   addtoSP() async {
+    print("Add TO SP");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('cart_data', cart_data);
-    prefs.setString('cart_color', cart_color);
-    prefs.setString('cart_size', cart_size);
-    prefs.setString('cart_size_name', cart_size_name);
-    print(cart_size_name);
+    prefs.setString("Custom_cart", jsonEncode(Custom_cart));
+    print(jsonDecode(prefs.getString("Custom_cart")));
     setState(() {
       adding = false;
     });
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MyCart()));
+    Fluttertoast.showToast(msg: "Iteam Added to cart!!");
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => MyCart())).then((value) => login?print(""):getCustomCart());
   }
 
   bool adding = false;
+  offline_cart(String p_id, String size_id, String color, String size_name) {
+    setState(() {
+      var Custom_cart_data = {
+        'p_id' : p_id.toString(),
+        'color' : color.toString(),
+        'size_id' : size_id.toString(),
+        'size_name' : size_name.toString(),
+      };
+      print("Virtual Cart: ");
+      print(Custom_cart);
+      print("adding");
+      Custom_cart.add(Custom_cart_data);
+      print(Custom_cart);
+      loding = true;
+      addtoSP();
+    });
+  }
+  bool exist = false;
   add_to_cart(
       String p_id, String size_id, String color, String size_name) async {
     setState(() {
@@ -1243,32 +1270,30 @@ class _DetailedState extends State<Detailed> {
     print(p_id + "  " + size_id + " " + size_name + " " + color);
     print(customer_id);
     if (customer_id == "0") {
-      setState(() {
-        loding = true;
-        if (cart_data == "0") {
-          cart_data = p_id.toString();
+      for(int i = 0 ; i < Custom_cart.length ; i++){
+        print(i);
+        print(Custom_cart[i]['p_id']);
+        if(Custom_cart[i]['p_id']==p_id.toString()){
+          if(Custom_cart[i]['size_id']==size_id.toString()){
+            print("Iteam Already in Cart");
+            setState(() {
+              exist = true;
+              adding = false;
+            });
+            Fluttertoast.showToast(msg: "Item Is Already In Cart!!");
+          } else {
+            print("Item not Exist");
+            setState(() {
+              exist = false;
+            });
+          }
         } else {
-          cart_data = cart_data + "," + p_id.toString();
+          print("Else Outer");
         }
-        if (cart_color == "0") {
-          cart_color = color.toString();
-        } else {
-          cart_color = cart_color + "," + color.toString();
-        }
-        if (cart_size == "0") {
-          cart_size = size_id.toString();
-        } else {
-          cart_size = cart_size + "," + size_id.toString();
-        }
-        if (cart_size_name == "0") {
-          cart_size_name = size_name.toString();
-        } else {
-          cart_size_name = cart_size_name + "," + size_name.toString();
-        }
-        addtoSP();
-        print(cart_data.toString());
-        print("not loggedIn");
-      });
+      }
+      if(!exist){
+        offline_cart(p_id, size_id, color, size_name);
+      }
     } else {
       print("adding data");
       http.Response response = await http.post(API.add_cart, body: {
@@ -1285,15 +1310,14 @@ class _DetailedState extends State<Detailed> {
         if (resp['status'] == 2) {
           Fluttertoast.showToast(msg: resp['message'].toString());
           print("Added to customer cart: " + customer_id);
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => MyCart()));
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (context) => MyCart()));
         } else {
           Fluttertoast.showToast(msg: resp['message'].toString());
         }
       });
     }
   }
-
   bool wishload = false;
   add_wish_list() async {
     if (login == false) {

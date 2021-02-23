@@ -24,6 +24,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   var lmail, lpass, rpassword, rpassword1;
   String gender = "Gender";
+  var Custom_cart;
   @override
   void initState() {
     print(widget.k.toString());
@@ -42,6 +43,12 @@ class _LoginState extends State<Login> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString("token");
     print("token: " + token);
+    Custom_cart = prefs.getString('Custom_cart') ?? [];
+    print(Custom_cart);
+    if(Custom_cart.length!=0){
+      Custom_cart = jsonDecode(Custom_cart);
+    }
+    print(Custom_cart);
   }
 
   checklogin() async {
@@ -116,21 +123,21 @@ class _LoginState extends State<Login> {
             addStringToSF("customer_id",
                 responsed["result"][0]["customer_id"].toString());
             addStringToSF("mobile", responsed["result"][0]["mobile"]);
-            addlogin();
+            addlogin(responsed["result"][0]["customer_id"].toString());
           });
           Fluttertoast.showToast(msg: responsed["message"]);
-          if (widget.k == 1) {
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyCart()));
-          } else if (widget.k == 2) {
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => WishList()));
-          } else
-            Navigator.pop(context);
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Dashboard()));
+          // if (widget.k == 1) {
+          //   Navigator.pop(context);
+          //   Navigator.pushReplacement(
+          //       context, MaterialPageRoute(builder: (context) => MyCart()));
+          // } else if (widget.k == 2) {
+          //   Navigator.pop(context);
+          //   Navigator.pushReplacement(
+          //       context, MaterialPageRoute(builder: (context) => WishList()));
+          // } else
+          //   Navigator.pop(context);
+          // Navigator.pushReplacement(
+          //     context, MaterialPageRoute(builder: (context) => Dashboard()));
         } else {
           setState(() {
             load = false;
@@ -157,9 +164,10 @@ class _LoginState extends State<Login> {
     prefs.setString(name, value);
   }
 
-  addlogin() async {
+  addlogin(String customer_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("login", true);
+    updateCart(customer_id);
   }
 
   final datecontroller = TextEditingController();
@@ -774,8 +782,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  signup(String name, String email, String mobile, String pass, String gender,
-      String dob) async {
+  signup(String name, String email, String mobile, String pass, String gender, String dob) async {
     print(name + email + mobile + pass + gender + dob);
     setState(() {
       loding = false;
@@ -803,8 +810,9 @@ class _LoginState extends State<Login> {
         prefs.setString("customer_id", res['result']['customer_id'].toString());
         // Navigator.popUntil(context, (route) => false);
         Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Dashboard()));
+        updateCart(res['result']['customer_id'].toString());
+        // Navigator.pushReplacement(
+            // context, MaterialPageRoute(builder: (context) => Dashboard()));
         // prefs.setString("", value)
       } else {
         Fluttertoast.showToast(msg: "Error Occured!!");
@@ -881,37 +889,90 @@ class _LoginState extends State<Login> {
     });
   }
 
-  addlogingoogle(
-      String email, String name, String photo, String mobile, String id) async {
+  addlogingoogle(String email, String name, String photo, String mobile, String id) async {
     setState(() {
       addStringToSF("name", name.toString());
       addStringToSF("email", email.toString());
       addStringToSF("profile_img", photo.toString());
       addStringToSF("mobile", mobile.toString());
       addStringToSF("customer_id", id.toString());
-      addlogin2();
+      addlogin2(id.toString());
     });
   }
 
-  addlogin2() async {
+  addlogin2(String customer_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("login", true);
+    updateCart(customer_id);
     if (widget.k == 1) {
       Navigator.pop(context);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => MyCart()));
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => MyCart()));
     } else if (widget.k == 2) {
       Navigator.pop(context);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => WishList()));
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => WishList()));
     } else
       Navigator.pop(context);
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Dashboard()));
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => Dashboard()));
   }
 
   _logout_google() {
     print("Google logout");
     _googleSignIn.signOut();
+  }
+
+  updateCart(String customer_id) async{
+    print("Adding to Cart"+ customer_id);
+    bool test = Custom_cart.length>0?true:false;
+    if(test){
+      print("local cart: "+Custom_cart.length.toString());
+      addItemToCart(customer_id);
+    }else{
+      print("in else");
+    }
+  }
+  addItemToCart(String customer_id)async{
+    print("in add item to cart");
+    var arr = List<Map>();
+    for(int i = 0;i<Custom_cart.length;i++){
+      Map m = {
+        "p_id":Custom_cart[i]['p_id'],
+        "size_id":Custom_cart[i]['size_id']
+      };
+      arr.add(m);
+      print(arr);
+      print("adding item to cart");
+    }
+    var body = json.encode({
+      'authkey' : API.key,
+      'customer_id' : customer_id,
+      'cart' : arr,
+    });
+    http.Response response = await http.post(
+      API.add_cart_login,
+      headers: <String, String>{
+        'Content_Type': 'application/json; charset=UTF-8'
+      },
+      body: body,
+    );
+    print(response.body);
+    setState(() {
+      var res = json.decode(response.body);
+      if(res['status']==2){
+        print("Data Added Succesfully");
+        deleteSp();
+      }else if(res['status']==1){
+        deleteSp();
+      }
+      else{
+        Fluttertoast.showToast(msg: "Error in loading!!",backgroundColor: Constants.PRIMARY_COLOR);
+      }
+    });
+  }
+  deleteSp()async{
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove("Custom_cart");
   }
 }

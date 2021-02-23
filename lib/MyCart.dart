@@ -25,35 +25,26 @@ class _MyCartState extends State<MyCart> {
   String customer_id,cart_data,cart_color,cart_size,cart_size_name;
   List ids,clrs,sizes,sizes_name;
   List<dynamic> cart = List();
+  var Custom_cart;
   getSp()async{
     print("In sp");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    customer_id = prefs.getString('customer_id')??"0";
-    cart_data = prefs.getString('cart_data')??"0";
-    cart_color = prefs.getString('cart_color')??"0";
-    cart_size = prefs.getString('cart_size')??"0";
-    cart_size_name = prefs.getString('cart_size_name')??"0";
     login = prefs.getBool('login')??false;
-    // print(login.toString());
-    // print(customer_id);
-    if(cart_data!="0"){
-      ids= cart_data.split(',');
-      clrs =cart_color.split(',');
-      sizes =cart_size.split(',');
-      sizes_name =cart_size_name.split(',');
-      print("P_ids: "+ids.toString());
-      print("sizes: "+sizes_name.toString());
-      print("colors: "+clrs.toString());
-      print("login: "+login.toString());
-      if(login==false){
+    Custom_cart = prefs.getString('Custom_cart') ?? [];
+    if(Custom_cart.length!=0){
+      Custom_cart = jsonDecode(Custom_cart);
+    }
+    if(login){
+      print("login "+ login.toString());
+      get_cart();
+    }else{
+      print("login "+ login.toString());
+      if(Custom_cart.length!=0){
+        print("data in ofline cart");
+        print(Custom_cart);
         get_static_cart();
       }else{
-        addItemToCart();
-      }
-    }else{
-      if(login){
-        get_cart();
-      }else{
+        print("in cart empty, and login false");
         setState(() {
           loding = true;
           no_data = true;
@@ -61,56 +52,15 @@ class _MyCartState extends State<MyCart> {
       }
     }
   }
-  addItemToCart()async{
-    var arr = List<Map>();
-    for(int i = 0;i<ids.length;i++){
-      Map m = {
-        "p_id":ids[i],
-        "size_id":sizes[i]
-      };
-      arr.add(m);
-      print(arr);
-      print("adding item to cart");
-//add all items
-    }
-    var body = json.encode({
-      'authkey' : API.key,
-      'customer_id' : customer_id,
-      'cart' : arr,
-    });
-    http.Response response = await http.post(
-      API.add_cart_login,
-      headers: <String, String>{
-        'Content_Type': 'application/json; charset=UTF-8'
-      },
-      body: body,
-    );
-    print(response.body);
-    setState(() {
-      var res = json.decode(response.body);
-      if(res['status']==2){
-        print("Data Added Succesfully");
-        get_cart();
-        deleteSp();
-      }else if(res['status']==1){
-        deleteSp();
-        get_cart();
-      }
-      else{
-        Fluttertoast.showToast(msg: "Error in loading!!",backgroundColor: Constants.PRIMARY_COLOR);
-        no_data = true;
-      }
-    });
-    // get_cart();
-    // deleteSp();
-  }
   get_cart()async{
+    print("get_cart calling");
+    var body = {
+      'authkey' : API.key,
+      'customer_id' : customer_id
+    };
     http.Response response = await http.post(
       API.fetch_cart,
-      body: {
-        'authkey' : API.key,
-        'customer_id' : customer_id,
-      }
+      body: body,
     );
     print(response.body);
     if(response.statusCode==200){
@@ -138,27 +88,29 @@ class _MyCartState extends State<MyCart> {
       });
     }
   }
-  delete_cart(String cart_id)async{
-  }
   get_static_cart()async {
-    for(int i=0;i<ids.length;i++){
+    print("Fetching Data : ");
+    for(int i=0;i<Custom_cart.length;i++){
       http.Response response =  await http.post(
           API.fetch_detailed,
           body: {
             'authkey' : API.key,
-            'p_id' : ids[i].toString(),
+            'p_id' : Custom_cart[i]['p_id'].toString(),
           }
       );
-      // print(response.body);
+      print(response.body);
       setState(() {
         var responsed = json.decode(response.body);
-        loding = true;
         no_data =false;
         cart.add(responsed['result'][0]);
         total = total+int.parse(responsed['result'][0]['price']);
       });
       // getProduct(ids[i]);
-      print("id is: "+ids[i]);
+      if(i == Custom_cart.length-1){
+        setState(() {
+          loding = true;
+        });
+      }
     }
   }
   @override
@@ -227,8 +179,7 @@ class _MyCartState extends State<MyCart> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-//                  itemCount: list1.length,
-                  itemCount: cart.length,
+                  itemCount: Custom_cart.length,
                   itemBuilder: (BuildContext context, int index){
                     return Container(
                       padding: EdgeInsets.all(5),
@@ -297,7 +248,7 @@ class _MyCartState extends State<MyCart> {
                                                   Text("Size: ",style: TextStyle(fontSize: 15),overflow: TextOverflow.ellipsis,),
                                                   Container(
                                                       width: 50,
-                                                      child:Text(login?cart[index]['size']:sizes_name[index].toString(),overflow:TextOverflow.fade,maxLines: 1,style: TextStyle(fontSize: 15),),
+                                                      child:Text(login?cart[index]['size']:Custom_cart[index]['size_name'].toString(),overflow:TextOverflow.fade,maxLines: 1,style: TextStyle(fontSize: 15),),
                                                   ),
                                                 ],
                                               ),
@@ -313,7 +264,7 @@ class _MyCartState extends State<MyCart> {
                                                     Container(
                                                       height: 13,
                                                       width: 13,
-                                                      color: login?Color(int.parse("0xff"+cart[index]['color_code'])):Color(int.parse("0xff"+clrs[index].toString())),
+                                                      color: login?Color(int.parse("0xff"+cart[index]['color_code'])):Color(int.parse("0xff"+Custom_cart[index]['color'].toString())),
                                                     ),
                                                   ],
                                                 ),
@@ -347,7 +298,7 @@ class _MyCartState extends State<MyCart> {
                                         child: Text("Yes"),
                                         onPressed: (){
                                           // Navigator.of(context).pop();
-                                          remove_from_cart(index.toString(),login?cart[index]['cart_id'].toString():"0");
+                                          remove_from_cart(index.toString(),login?cart[index]['cart_id'].toString():"0",cart[index]['price']);
                                         },
                                       ),
                                     ],
@@ -472,7 +423,8 @@ class _MyCartState extends State<MyCart> {
       });
     }
   }
-  remove_from_cart(String index,String cart_id)async{
+  remove_from_cart(String index,String cart_id,String price)async{
+    print("deleting price: "+price);
     if(login){
       Navigator.pop(context);
       setState(() {
@@ -489,6 +441,7 @@ class _MyCartState extends State<MyCart> {
       setState(() {
         var res = json.decode(response.body);
         if(res['status']==2) {
+          Navigator.of(context).pop();
           get_cart();
         }else if(res['status']==1){
           Fluttertoast.showToast(msg: res['message']);
@@ -496,48 +449,37 @@ class _MyCartState extends State<MyCart> {
       });
     }
     else{
+      print("notlogin delete at"+index);
      setState(() {
+       Custom_cart.removeAt(int.parse(index));
        cart.removeAt(int.parse(index));
-       ids.removeAt(int.parse(index));
-       print("ids"+ids.toString());
-       clrs.removeAt(int.parse(index));
-       print("clrs"+clrs.toString());
-       sizes.removeAt(int.parse(index));
-       print("sizes"+sizes.toString());
-       sizes_name.removeAt(int.parse(index));
-       print("size name" + sizes_name.toString());
-       if(ids.length>0){
-         for(int i = 0;i<ids.length;i++){
-           if(nae == "0"){
-             nae = ids[i];
-             clrsn= clrs[i];
-             sizesn = sizes[i];
-             sizes_namen = sizes_name[i];
-           }else{
-             nae  = nae + ","+ids[i];
-             clrsn= clrsn+ ","+clrs[i];
-             sizesn = sizesn+","+sizes[i];
-             sizes_namen = sizes_namen+","+sizes_name[i];
-           }
-         }
-         getSp();
+       Navigator.of(context).pop();
+       print(Custom_cart);
+       print("-----------------------");
+       print("Cart Length: "+Custom_cart.length.toString());
+       if(Custom_cart.length>0){
+         settingSp(Custom_cart, price);
        }else{
          deleteSp();
        }
-       print("ids: "+nae);
-       print("colors: "+clrsn);
-       print("sizes: "+sizesn);
-       print("sizes name: "+sizes_namen);
-       setSp(nae,clrsn,sizesn,sizes_namen);
      });
     }
   }
+  settingSp(var Custom_cart, String price)async{
+    print("in setting sp");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("Custom_cart", jsonEncode(Custom_cart));
+    print("saved to sp");
+    total= 0;
+    getSp();
+  }
   deleteSp()async{
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.remove("cart_data");
-    pref.remove("cart_color");
-    pref.remove("cart_size");
-    pref.remove("cart_size_name");
+    pref.remove("Custom_cart");
+    getSp();
+    setState(() {
+      no_data=true;
+    });
   }
   setSp(String nae,String clrsn,String sizesn,String sizes_namen)async{
     SharedPreferences pref = await SharedPreferences.getInstance();
