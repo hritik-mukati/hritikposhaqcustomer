@@ -158,7 +158,6 @@ class _PaymentModeState extends State<PaymentMode> {
         body: {
           'authkey' : API.key,
           'customer_id' : customer_id,
-          // 'selling_price' : widget.total.toString(),
           'customer_name' : widget.name,
           'address' : widget.address,
           'mobile' : widget.mobile,

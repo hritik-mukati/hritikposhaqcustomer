@@ -115,9 +115,6 @@ class _LoginState extends State<Login> {
         print(responsed);
         if (responsed["status"] == 2) {
           setState(() {
-            load = false;
-          });
-          setState(() {
             addStringToSF("name", responsed["result"][0]["name"]);
             addStringToSF("email", responsed["result"][0]["email"]);
             addStringToSF("customer_id",
@@ -126,18 +123,6 @@ class _LoginState extends State<Login> {
             addlogin(responsed["result"][0]["customer_id"].toString());
           });
           Fluttertoast.showToast(msg: responsed["message"]);
-          // if (widget.k == 1) {
-          //   Navigator.pop(context);
-          //   Navigator.pushReplacement(
-          //       context, MaterialPageRoute(builder: (context) => MyCart()));
-          // } else if (widget.k == 2) {
-          //   Navigator.pop(context);
-          //   Navigator.pushReplacement(
-          //       context, MaterialPageRoute(builder: (context) => WishList()));
-          // } else
-          //   Navigator.pop(context);
-          // Navigator.pushReplacement(
-          //     context, MaterialPageRoute(builder: (context) => Dashboard()));
         } else {
           setState(() {
             load = false;
@@ -823,7 +808,9 @@ class _LoginState extends State<Login> {
   // google login data..
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
   _login_google() async {
+    print("login google");
     try {
+      print('Inside try block');
       await _googleSignIn.signIn();
       Fluttertoast.showToast(
           backgroundColor: Colors.black,
@@ -841,11 +828,13 @@ class _LoginState extends State<Login> {
             _googleSignIn.currentUser.photoUrl);
       });
     } catch (e) {
+      print('catch block');
       print(e.toString());
     }
   }
 
-  checklogingoogle(String email, String name, String photo) async {
+  checklogingoogle(String email, String name, String photo) async
+  print('checkLogin');
     setState(() {
       load = true;
       print("1111");
@@ -904,16 +893,16 @@ class _LoginState extends State<Login> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("login", true);
     updateCart(customer_id);
-    if (widget.k == 1) {
-      Navigator.pop(context);
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (context) => MyCart()));
-    } else if (widget.k == 2) {
-      Navigator.pop(context);
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (context) => WishList()));
-    } else
-      Navigator.pop(context);
+    // if (widget.k == 1) {
+    //   Navigator.pop(context);
+    //   // Navigator.pushReplacement(
+    //   //     context, MaterialPageRoute(builder: (context) => MyCart()));
+    // } else if (widget.k == 2) {
+    //   Navigator.pop(context);
+    //   // Navigator.pushReplacement(
+    //   //     context, MaterialPageRoute(builder: (context) => WishList()));
+    // } else
+    //   Navigator.pop(context);
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => Dashboard()));
   }
@@ -930,7 +919,7 @@ class _LoginState extends State<Login> {
       print("local cart: "+Custom_cart.length.toString());
       addItemToCart(customer_id);
     }else{
-      print("in else");
+      deleteSp();
     }
   }
   addItemToCart(String customer_id)async{
@@ -959,6 +948,7 @@ class _LoginState extends State<Login> {
     );
     print(response.body);
     setState(() {
+        load = false;
       var res = json.decode(response.body);
       if(res['status']==2){
         print("Data Added Succesfully");
@@ -974,5 +964,17 @@ class _LoginState extends State<Login> {
   deleteSp()async{
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove("Custom_cart");
+    // if (widget.k == 1) {
+    //   Navigator.pop(context);
+    //   Navigator.pushReplacement(
+    //       context, MaterialPageRoute(builder: (context) => MyCart()));
+    // } else if (widget.k == 2) {
+    //   Navigator.pop(context);
+    //   Navigator.pushReplacement(
+    //       context, MaterialPageRoute(builder: (context) => WishList()));
+    // } else
+      Navigator.pop(context);
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => Dashboard()));
   }
 }

@@ -1092,7 +1092,7 @@ class _DashboardState extends State<Dashboard> {
       if (responsed['status'] == 2) {
         lod = true;
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login(0)));
+            context, MaterialPageRoute(builder: (context) => Login(0))).then((value) => getSp(1));
       } else {
         lod = true;
         Fluttertoast.showToast(msg: "Network Error!!");
@@ -1786,8 +1786,10 @@ class _NotificationState extends State<Notification> {
                   login
                       ? Navigator.push(context,
                           MaterialPageRoute(builder: (context) => WishList()))
-                      : Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Login(0)));
+                      :
+                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Login(0))).then((value) => getSp());
                 },
                 child: Container(
                   child: Row(

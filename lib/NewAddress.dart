@@ -149,16 +149,16 @@ class _NewAddressState extends State<NewAddress> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(
-                      color: Color(0xff5c8c3c),
+                      color: Constants.PRIMARY_COLOR,
                       width: 2.0,
                     ),
                   ),
                   labelStyle: TextStyle(
-                      color: Color(0xff5c8c3c)
+                    color: Constants.PRIMARY_COLOR,
                   ),
                   focusedBorder : new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(10.0),
-                    borderSide: new BorderSide(color: Color(0xffd5ae4f), width: 2.0,),
+                    borderSide: new BorderSide(color: Constants.PRIMARY_COLOR, width: 2.0,),
                   ),
                 ),
                 onChanged: (input){
@@ -185,16 +185,16 @@ class _NewAddressState extends State<NewAddress> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(
-                      color: Color(0xff5c8c3c),
+                      color: Constants.PRIMARY_COLOR,
                       width: 2.0,
                     ),
                   ),
                   labelStyle: TextStyle(
-                      color: Color(0xff5c8c3c)
+                    color: Constants.PRIMARY_COLOR,
                   ),
                   focusedBorder : new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(10.0),
-                    borderSide: new BorderSide(color: Color(0xffd5ae4f), width: 2.0,),
+                    borderSide: new BorderSide(color: Constants.PRIMARY_COLOR, width: 2.0,),
                   ),
                 ),
                 onChanged: (input){
@@ -216,24 +216,25 @@ class _NewAddressState extends State<NewAddress> {
                 keyboardType: TextInputType.number,
                 maxLength: 10,
                 decoration: new InputDecoration(
+                  counterText: '',
                   prefix: Text("+91"),
                   labelText: "Mobile",
-                  fillColor: Colors.white,
                   errorText: _validate4 ? 'Value Can\'t Be Empty' : null,
+                  fillColor: Colors.white,
                   filled: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(
-                      color: Color(0xff5c8c3c),
+                      color: Constants.PRIMARY_COLOR,
                       width: 2.0,
                     ),
                   ),
                   labelStyle: TextStyle(
-                      color: Color(0xff5c8c3c)
+                    color: Constants.PRIMARY_COLOR,
                   ),
                   focusedBorder : new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(10.0),
-                    borderSide: new BorderSide(color: Color(0xffd5ae4f), width: 2.0,),
+                    borderSide: new BorderSide(color: Constants.PRIMARY_COLOR, width: 2.0,),
                   ),
                 ),
                 onChanged: (input){
@@ -254,22 +255,22 @@ class _NewAddressState extends State<NewAddress> {
                 style: TextStyle(color: Color(0xff5c8c3c)),
                 decoration: new InputDecoration(
                   labelText: "City",
-                  fillColor: Colors.white,
                   errorText: _validate5 ? 'Value Can\'t Be Empty' : null,
+                  fillColor: Colors.white,
                   filled: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(
-                      color: Color(0xff5c8c3c),
+                      color: Constants.PRIMARY_COLOR,
                       width: 2.0,
                     ),
                   ),
                   labelStyle: TextStyle(
-                      color: Color(0xff5c8c3c)
+                    color: Constants.PRIMARY_COLOR,
                   ),
                   focusedBorder : new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(10.0),
-                    borderSide: new BorderSide(color: Color(0xffd5ae4f), width: 2.0,),
+                    borderSide: new BorderSide(color: Constants.PRIMARY_COLOR, width: 2.0,),
                   ),
                 ),
                 onChanged: (input){
@@ -291,23 +292,24 @@ class _NewAddressState extends State<NewAddress> {
                 style: TextStyle(color: Color(0xff5c8c3c)),
                 maxLength: 6,
                 decoration: new InputDecoration(
+                  counterText: '',
                   labelText: "PIN Code",
-                  fillColor: Colors.white,
                   errorText: _validate6 ? 'Value Can\'t Be Empty' : null,
+                  fillColor: Colors.white,
                   filled: true,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     borderSide: BorderSide(
-                      color: Color(0xff5c8c3c),
+                      color: Constants.PRIMARY_COLOR,
                       width: 2.0,
                     ),
                   ),
                   labelStyle: TextStyle(
-                      color: Color(0xff5c8c3c)
+                    color: Constants.PRIMARY_COLOR,
                   ),
                   focusedBorder : new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(10.0),
-                    borderSide: new BorderSide(color: Color(0xffd5ae4f), width: 2.0,),
+                    borderSide: new BorderSide(color: Constants.PRIMARY_COLOR, width: 2.0,),
                   ),
                 ),
                 onChanged: (input){

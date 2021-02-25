@@ -36,6 +36,9 @@ class _MyCartState extends State<MyCart> {
     }
     if(login){
       print("login "+ login.toString());
+      setState(() {
+        customer_id = prefs.getString("customer_id") ?? "0";
+      });
       get_cart();
     }else{
       print("login "+ login.toString());
@@ -52,40 +55,57 @@ class _MyCartState extends State<MyCart> {
       }
     }
   }
-  get_cart()async{
+  get_cart() async {
     print("get_cart calling");
+    print(API.fetch_cart.toString());
+    print(API.key);
+    print(customer_id.toString());
     var body = {
       'authkey' : API.key,
       'customer_id' : customer_id
     };
-    http.Response response = await http.post(
-      API.fetch_cart,
-      body: body,
-    );
-    print(response.body);
-    if(response.statusCode==200){
-      setState(() {
-        total = 0;
-        var responsed = json.decode(response.body);
-        if(responsed['status'] == 2){
-          cart = responsed['result'];
-          print(cart.toString());
-          for(int i=0;i<cart.length;i++){
-            total = total+int.parse(cart[i]['price']);
+    try{
+      http.Response response = await http.post(
+        Uri(
+            scheme: 'https',
+            host:"saffronitsystems.com",
+            path: "/dproject/index.php/Customer/getCart"
+        ),
+        body: body,
+      );
+      print(response.body);
+      if(response.statusCode==200){
+        setState(() {
+          total = 0;
+          var responsed = json.decode(response.body);
+          if(responsed['status'] == 2){
+            cart = responsed['result'];
+            print(cart.toString());
+            for(int i=0;i<cart.length;i++){
+              total = total+int.parse(cart[i]['price']);
+            }
+            print("total: "+total.toString());
+            no_data = false;
+          }else{
+            no_data = true;
+            cart = List();
           }
-          print("total: "+total.toString());
-          no_data = false;
-        }else{
-          no_data = true;
-          cart = List();
-        }
-        loding = true;
-      });
-    }else{
-      setState(() {
-        loding = true;
-        Fluttertoast.showToast(msg: "Error Occured!!");
-      });
+
+          setState(() {
+            Custom_cart = cart;
+          });
+          loding = true;
+        });
+      }else{
+        setState(() {
+          loding = true;
+          Fluttertoast.showToast(msg: "Error Occured!!");
+        });
+      }
+    }
+    catch(e){
+      print(e.runtimeType);
+      print(e);
     }
   }
   get_static_cart()async {

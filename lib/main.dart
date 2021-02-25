@@ -18,7 +18,8 @@ void main() {
     theme: ThemeData(
         primaryColor: Constants.PRIMARY_COLOR,
         accentColor: Constants.ACCENT_COLOR,
-        backgroundColor: Constants.BACKGROUND_COLOR),
+        backgroundColor: Constants.BACKGROUND_COLOR
+    ),
     routes: <String, WidgetBuilder>{
       "/Login": (BuildContext context) => Login(0),
       "/Dashboard": (BuildContext context) => Dashboard(),
