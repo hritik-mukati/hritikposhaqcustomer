@@ -56,8 +56,7 @@ class _LoginState extends State<Login> {
     bool login = prefs.getBool("login") ?? false;
     if (login == true) {
       Fluttertoast.showToast(msg: "Already Logged in!");
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Dashboard()));
+      Navigator.of(context).pop();
     } else {
       _logout_google();
     }
@@ -833,8 +832,8 @@ class _LoginState extends State<Login> {
     }
   }
 
-  checklogingoogle(String email, String name, String photo) async
-  print('checkLogin');
+  checklogingoogle(String email, String name, String photo) async {
+    print('chckLogin goole');
     setState(() {
       load = true;
       print("1111");
@@ -964,6 +963,7 @@ class _LoginState extends State<Login> {
   deleteSp()async{
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove("Custom_cart");
+    print("Here");
     // if (widget.k == 1) {
     //   Navigator.pop(context);
     //   Navigator.pushReplacement(
@@ -973,7 +973,7 @@ class _LoginState extends State<Login> {
     //   Navigator.pushReplacement(
     //       context, MaterialPageRoute(builder: (context) => WishList()));
     // } else
-      Navigator.pop(context);
+      Navigator.of(context).pop();
     // Navigator.pushReplacement(
     //     context, MaterialPageRoute(builder: (context) => Dashboard()));
   }

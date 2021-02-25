@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dproject/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,7 +21,7 @@ class MyOrder extends StatefulWidget {
 }
 
 class _MyOrderState extends State<MyOrder> {
-  bool load = true,data = true;
+  bool load = true,data = true,login = false;
   bool error = true;
   String customer_id;
   _showModal(var context,var id){
@@ -83,7 +84,14 @@ class _MyOrderState extends State<MyOrder> {
   getSp()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     customer_id = prefs.getString("customer_id")??"0";
-    getdata(customer_id);
+    login = prefs.getBool('login')??false;
+    if(login){
+      getdata(customer_id);
+    }else{
+      Fluttertoast.showToast(msg: "Login First to view Orders!");
+      // Navigator.of(context).pop();
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>Login(3))).then((value) => getSp());
+    }
   }
   @override
   void initState() {
@@ -105,7 +113,7 @@ class _MyOrderState extends State<MyOrder> {
         ),
         title: Text(widget.title,style: TextStyle(color:Theme.of(context).accentColor),),
       ),
-      body:   load ? error ? data?Container(
+      body:   login ? load ? error ? data?Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -452,7 +460,28 @@ class _MyOrderState extends State<MyOrder> {
             ),
           ],
         ),),)
-          : Container(child: Center(child: ProgressDailog().Progress(context),),),
+          : Container(child: Center(child: ProgressDailog().Progress(context),),)
+          : Container(
+        height: MediaQuery.of(context).size.height,
+        child: Center(child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("Login to Check Orders!"),
+            Text(""),
+            RaisedButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)),side: BorderSide(color: Theme.of(context).accentColor)),
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Login(3))).then((value) => getSp());
+              },
+              color: Theme.of(context).primaryColor,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12.0,12,12,12),
+                child: Text("Retry",style: TextStyle(color:Theme.of(context).accentColor,fontSize: 16),),
+              ),
+            ),
+          ],
+        ),),)
     );
   }
 }
@@ -541,6 +570,7 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
       );
       print(response.body);
       setState(() {
+        Navigator.of(context).pop();
         var responsed = json.decode(response.body);
         if(responsed['status']==1){
           print("no data");
@@ -557,6 +587,7 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
           print("else");
           load  = true;
         }
+        initState();
       });
     }catch(e){
       Fluttertoast.showToast(msg: e.toString());
@@ -711,13 +742,13 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                       children: [
                                         SizedBox(
                                             width: 200,
-                                            child: Text(data[0]['name'].toString(),maxLines: 3,style: TextStyle(color: Constants.PRIMARY_COLOR,fontWeight: FontWeight.bold,fontSize: 20),)),
+                                            child: Text(data1[0]['name'].toString(),maxLines: 3,style: TextStyle(color: Constants.PRIMARY_COLOR,fontWeight: FontWeight.bold,fontSize: 20),)),
                                         Container(
                                           width: 20,
                                           height: 20,
                                           decoration: BoxDecoration(
                                             // color:Colors.red,
-                                            color: Color(int.parse("0xff"+data[0]['color_code'].toString())),
+                                            color: Color(int.parse("0xff"+data1[0]['color_code'].toString())),
                                           ),
                                         ),
                                       ],
@@ -726,7 +757,7 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Text("Size : ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
-                                        Text(data[0]['size_name'].toString().toUpperCase(),style: TextStyle(fontSize: 16),),
+                                        Text(data1[0]['size_name'].toString().toUpperCase(),style: TextStyle(fontSize: 16),),
                                       ],
                                     )
                                   ],
@@ -786,7 +817,7 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                       FlatButton(
                                         child: new Text("Yes"),
                                         onPressed: () {
-                                          cancelOrder(data[0]['order_id'].toString(), "4");
+                                          cancelOrder(data1[0]['order_id'].toString(), "4");
 //                                                Fluttertoast.showToast(msg: "Yes Order Delivered");
 //                                         if(data1[0]['status_id']==1){
 //                                           updateStatus(2, data1[0]['order_id']);
@@ -920,6 +951,7 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                       FlatButton(
                                         child: new Text("Yes"),
                                         onPressed: () {
+                                          cancelOrder(data1[0]['order_id'].toString(), "4");
 //                                                Fluttertoast.showToast(msg: "Yes Order Delivered");
 //                                         if(data1[0]['status_id']==1){
 //                                           updateStatus(2, data1[0]['order_id']);
