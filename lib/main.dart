@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dproject/Constants.dart';
 import 'package:dproject/Detailed.dart';
 import 'package:dproject/login.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,12 +38,60 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String token;
+  var param;
+  bool link = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initDynamicLinks();
+    Firebase.initializeApp();
     firebaseCloudMessaging_Listeners();
     //
+  }
+
+
+  Future initDynamicLinks() async {
+    PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    Uri deepLink = data?.link;
+    print("spalsh : "+deepLink.toString());
+    if (deepLink != null) {
+      print("path:- " + deepLink.path);
+      if (deepLink.path == "/product") {
+        var param = deepLink.queryParameters['p_id'];
+        print("param 1 : "+param);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Detailed(param)));
+      }
+    }
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          Uri deepLink = dynamicLink?.link;
+          print("on success: "+deepLink.toString());
+          if (deepLink != null) {
+            print("path:- " + deepLink.path);
+            print(deepLink.queryParameters.toString());
+            if (deepLink.path == "/product") {
+              print("in if condition");
+              link = true;
+              print(link.toString());
+              param = deepLink.queryParameters['p_id'].toString();
+              print("param:  "+param);
+              getSP();
+            }
+            else{
+              print("else");
+            }
+          }
+          getSP();
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+  }
+  getDetailed(String p_id){
+    print("p_id: "+p_id);
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => Detailed(p_id)));
   }
 
   tokens(String token) async {
@@ -84,44 +133,13 @@ class _SplashState extends State<Splash> {
     });
   }
 
-  Future initDynamicLinks() async {
-    PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    Uri deepLink = data?.link;
-    print("spalsh : " + deepLink.toString());
-    if (deepLink != null) {
-      print("path:- " + deepLink.path);
-      if (deepLink.path == "/product") {
-        var param = deepLink.queryParameters['p_id'];
-        print("param 1 : " + param);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Dashboard()));
-      }
-    }
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      Uri deepLink = dynamicLink?.link;
-      print("on success: " + deepLink.toString());
-      if (deepLink != null) {
-        print("path:- " + deepLink.path);
-        print(deepLink.queryParameters.toString());
-        if (deepLink.path == "/product") {
-          var param = deepLink.queryParameters['p_id'].toString();
-          print(param);
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Dashboard()));
-        } else
-          print("no");
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
-//    getSP();
-  }
-
   getSP() {
-    Navigator.pushReplacementNamed(context, "/Dashboard");
+    print("in SP");
+    if(link){
+      getDetailed(param);
+    }else {
+      Navigator.pushReplacementNamed(context, "/Dashboard");
+    }
   }
 
   @override

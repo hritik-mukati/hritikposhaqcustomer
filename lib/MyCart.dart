@@ -446,7 +446,6 @@ class _MyCartState extends State<MyCart> {
   remove_from_cart(String index,String cart_id,String price)async{
     print("deleting price: "+price);
     if(login){
-      Navigator.pop(context);
       setState(() {
         loding = false;
       });

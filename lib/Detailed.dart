@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:dproject/Dashboard.dart';
 import 'package:dproject/MyCart.dart';
+import 'package:dproject/imageViewer.dart';
 import 'package:dproject/login.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
@@ -254,10 +255,41 @@ class _DetailedState extends State<Detailed> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print("Detailed:  "+widget.p_id.toString());
     initialCheck();
     heightAppBar = 450;
     getSp();
   }
+
+  void share() async{
+    var url = await buildUrl(widget.p_id);
+    print(url.toString());
+    Share.share(url.toString(),subject: "Sharing Product Details");
+  }
+
+  Future<Uri> buildUrl(String p_id) async{
+    DynamicLinkParameters parameter = DynamicLinkParameters(
+        uriPrefix: "https://poshaqin.page.link",
+        link: Uri.parse("http://poshaqin.page.link/product?p_id=$p_id"),
+        androidParameters: AndroidParameters(
+          packageName: "com.poshaq.customer",
+          minimumVersion:0,
+        ),
+        iosParameters:  IosParameters(
+          bundleId: 'com.poshaq.customer',
+          minimumVersion: '0',
+        ),
+        socialMetaTagParameters: SocialMetaTagParameters(
+            description: "Please have a look for the "+responsed['result'][0]['name'].toString(),
+            title: responsed['result'][0]['name'].toString(),
+            imageUrl: Uri.parse(responsed['result'][0]['images'][0]['img_url'].toString())
+        )
+    );
+    print(parameter.link.toString());
+    var u = await parameter.buildShortLink();
+    return u.shortUrl;
+  }
+
 
   void _modalBottomSheetMenu() {
     showModalBottomSheet(
@@ -407,7 +439,7 @@ class _DetailedState extends State<Detailed> {
                     child: RaisedButton(
                       color: Constants.PRIMARY_COLOR,
                       child: Text(
-                        "Network Error Relode",
+                        "Network Error Reload",
                         style: TextStyle(color: Constants.ACCENT_COLOR),
                       ),
                       onPressed: () {
@@ -531,11 +563,8 @@ class _DetailedState extends State<Detailed> {
                                                           icon:
                                                               Icon(Icons.share),
                                                           onPressed: () {
-                                                            print(
-                                                                uri.toString());
-                                                            Share.share(
-                                                                uri.toString());
-                                                          },
+                                                              share();
+                                                            },
                                                         );
                                                       } else {
                                                         return IconButton(
@@ -888,8 +917,6 @@ class _DetailedState extends State<Detailed> {
                                                 top: 0.0, bottom: 0),
                                             child: FlatButton(
                                               onPressed: () {
-                                                Fluttertoast.showToast(
-                                                    msg: "Size Chart.");
                                               },
                                               child: Row(
                                                 mainAxisAlignment:
@@ -945,8 +972,7 @@ class _DetailedState extends State<Detailed> {
                                                 top: 0.0, bottom: 0),
                                             child: FlatButton(
                                               onPressed: () {
-                                                Fluttertoast.showToast(
-                                                    msg: "Size Chart.");
+                                                Navigator.push(context, MaterialPageRoute(builder: (context)=>ImageViewers("Size Chart", "https://www.saffronitsystems.com/dproject/index.php/product//fetch_file_img?img=size.jpg")));
                                               },
                                               child: Row(
                                                 mainAxisAlignment:
@@ -1220,13 +1246,13 @@ class _DetailedState extends State<Detailed> {
     );
   }
 
-  share(BuildContext context) {
-    final RenderBox box = context.findRenderObject();
-
-    Share.share("dssd- fdf",
-        subject: "dfdf",
-        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-  }
+  // share(BuildContext context) {
+  //   final RenderBox box = context.findRenderObject();
+  //
+  //   Share.share("dssd- fdf",
+  //       subject: "dfdf",
+  //       sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  // }
   String cart_data = "0",
       cart_color = "0",
       cart_size = "0",

@@ -127,6 +127,8 @@ class _BannerPageState extends State<BannerPage> {
               data = false;
             });
           }
+          print("----------------");
+          print(products[0]['img']);
         });
       }else{
         setState(() {
@@ -240,7 +242,7 @@ class _BannerPageState extends State<BannerPage> {
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(10),
                                               image:DecorationImage(
-                                                image:NetworkImage(products[index]['img'].toString()),
+                                                image:products[index]['img']!=null?NetworkImage(products[index]['img'].toString()):AssetImage('images/no-img.png'),
                                                 fit: BoxFit.fill,
                                               ),
                                             ),

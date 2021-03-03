@@ -1156,24 +1156,24 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(
               width: width,
               height: height / 3.5,
-              // child: Padding(
-              //   padding: const EdgeInsets.only(top: 2, bottom: 0.0),
-              //   child: getimg
-              //       ? Carousel(
-              //           boxFit: BoxFit.fill,
-              //           images: imageList,
-              //           autoplay: true,
-              //           showIndicator: true,
-              //           dotSize: 5.0,
-              //           dotSpacing: 20.0,
-              //           dotBgColor: Constants.ACCENT_COLOR,
-              //           indicatorBgPadding: 0.0,
-              //           dotColor: Constants.PRIMARY_COLOR,
-              //         )
-              //       : Center(
-              //           child: ProgressDailog().Progress(context),
-              //         ),
-              // ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2, bottom: 0.0),
+                child: getimg
+                    ? Carousel(
+                        boxFit: BoxFit.fill,
+                        images: imageList,
+                        autoplay: true,
+                        showIndicator: true,
+                        dotSize: 5.0,
+                        dotSpacing: 20.0,
+                        dotBgColor: Constants.ACCENT_COLOR,
+                        indicatorBgPadding: 0.0,
+                        dotColor: Constants.PRIMARY_COLOR,
+                      )
+                    : Center(
+                        child: ProgressDailog().Progress(context),
+                      ),
+              ),
             ),
             Center(
                 child: Padding(
@@ -1182,7 +1182,8 @@ class _DashboardState extends State<Dashboard> {
                 "Be New",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-            )),
+            )
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1696,6 +1697,7 @@ class _NotificationState extends State<Notification> {
     // TODO: implement initState
     super.initState();
     getSp();
+    initDynamicLinks();
   }
 
   getSp() async {
@@ -1705,6 +1707,42 @@ class _NotificationState extends State<Notification> {
     print("customer_id: " + customer_id);
     name = prefs.getString("name") ?? "0"; //
   }
+
+  Future initDynamicLinks() async {
+    PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    Uri deepLink = data?.link;
+    print("spalsh : "+deepLink.toString());
+    if (deepLink != null) {
+      print("path:- " + deepLink.path);
+      if (deepLink.path == "/product") {
+        var param = deepLink.queryParameters['p_id'];
+        print("param 1 : "+param);
+        //   Navigator.push(
+        //       context, MaterialPageRoute(builder: (context) => Detail(param)));
+      }
+    }
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          Uri deepLink = dynamicLink?.link;
+          print("on success: "+deepLink.toString());
+          if (deepLink != null) {
+            print("path:- " + deepLink.path);
+            print(deepLink.queryParameters.toString());
+            if (deepLink.path == "/product") {
+              var param = deepLink.queryParameters['p_id'].toString();
+              print(param);
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => Detail(param)));
+            }
+            else
+              print("no");
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+//    getSP();
+  }
+
 
   @override
   Widget build(BuildContext context) {

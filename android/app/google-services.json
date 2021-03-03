@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "340001960799-3pjp8tj3d3imqg1qndhcuct7bvhsrrgi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poshaq.customer",
+            "certificate_hash": "7f62b9b9e359442f336269a33726526f2d92e145"
+          }
+        },
+        {
           "client_id": "340001960799-6ipk99am2u2s61cmop7rm6pkq9q2kj5i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -28,6 +36,14 @@
           "android_info": {
             "package_name": "com.poshaq.customer",
             "certificate_hash": "6906e0aa51c76cb061c78406a1378cfb2e63741b"
+          }
+        },
+        {
+          "client_id": "340001960799-p4k4m46d4rl4qtu9si2kq96bfimnc7ea.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poshaq.customer",
+            "certificate_hash": "f583646650c48a2de439f2b051332363a9541f1d"
           }
         },
         {

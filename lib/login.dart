@@ -9,9 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'MyCart.dart';
+// import '';
 import 'ProgressDailog.dart';
 
 class Login extends StatefulWidget {
@@ -804,13 +807,21 @@ class _LoginState extends State<Login> {
     });
   }
 
+
   // google login data..
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  GoogleSignIn _googleSignIn = GoogleSignIn();
   _login_google() async {
     print("login google");
-    try {
+    // try {
       print('Inside try block');
-      await _googleSignIn.signIn();
+      // await _googleSignIn.signIn();
+      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+      GoogleSignInAuthentication googleSignInAuthentication =  await googleSignInAccount.authentication;
+      AuthCredential credential = GoogleAuthProvider.credential(accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken);
+      UserCredential authResult = await _auth.signInWithCredential(credential);
+      User _user = authResult.user;
       Fluttertoast.showToast(
           backgroundColor: Colors.black,
           msg: "Wait A Second!",
@@ -818,18 +829,22 @@ class _LoginState extends State<Login> {
           textColor: Colors.white,
           gravity: ToastGravity.CENTER);
       setState(() {
-        print(_googleSignIn.currentUser.email);
-        print(_googleSignIn.currentUser.displayName);
-        print(_googleSignIn.currentUser.id);
+        print(_user.email);
+        print(_user.displayName);
+        print(_user.uid);
+        print(_user.photoURL);
+        // print(_googleSignIn.currentUser.email);
+        // print(_googleSignIn.currentUser.displayName);
+        // print(_googleSignIn.currentUser.id);
         checklogingoogle(
-            _googleSignIn.currentUser.email,
-            _googleSignIn.currentUser.displayName,
-            _googleSignIn.currentUser.photoUrl);
+            _user.email,
+            _user.displayName,
+            _user.photoURL);
       });
-    } catch (e) {
-      print('catch block');
-      print(e.toString());
-    }
+    // } catch (e) {
+    //   print('catch block');
+    //   print(e.toString());
+    // }
   }
 
   checklogingoogle(String email, String name, String photo) async {

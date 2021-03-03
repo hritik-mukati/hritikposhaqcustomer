@@ -21,6 +21,7 @@ class GoogleLogin extends StatefulWidget {
 
 class _GoogleLoginState extends State<GoogleLogin> {
   String mobile;
+  var Custom_cart;
   @override
   void initState() {
     // TODO: implement initState
@@ -33,6 +34,12 @@ class _GoogleLoginState extends State<GoogleLogin> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString("token");
     print("token:" + token);
+    Custom_cart = prefs.getString('Custom_cart') ?? [];
+    print(Custom_cart);
+    if(Custom_cart.length!=0){
+      Custom_cart = jsonDecode(Custom_cart);
+    }
+    print(Custom_cart);
   }
 
   @override
@@ -336,7 +343,7 @@ class _GoogleLoginState extends State<GoogleLogin> {
     print(" -----   ");
     if (response.statusCode == 200) {
       setState(() {
-        // loding = true;
+        loding = true;
         var res = json.decode(response.body);
         if (res['status'] == 2) {
           addlogin(res['result']['customer_id'].toString());
@@ -360,7 +367,7 @@ class _GoogleLoginState extends State<GoogleLogin> {
       addStringToSF("profile_img", widget.photo.toString());
       addStringToSF("mobile", mobile.toString());
       addStringToSF("customer_id", id.toString());
-      addlogin2();
+      addlogin2(id.toString());
     });
   }
 
@@ -369,14 +376,80 @@ class _GoogleLoginState extends State<GoogleLogin> {
     prefs.setString(key, value);
   }
 
-  addlogin2() async {
+  addlogin2(String customer_id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("login", true);
+    updateCart(customer_id);
+  }
+  updateCart(String customer_id) async{
+    print("Adding to Cart"+ customer_id);
+    bool test = Custom_cart.length>0?true:false;
+    if(test){
+      print("local cart: "+Custom_cart.length.toString());
+      addItemToCart(customer_id);
+    }else{
+      deleteSp();
+    }
+  }
+  addItemToCart(String customer_id)async{
+    print("in add item to cart");
+    var arr = List<Map>();
+    for(int i = 0;i<Custom_cart.length;i++){
+      Map m = {
+        "p_id":Custom_cart[i]['p_id'],
+        "size_id":Custom_cart[i]['size_id']
+      };
+      arr.add(m);
+      print(arr);
+      print("adding item to cart");
+    }
+    var body = json.encode({
+      'authkey' : API.key,
+      'customer_id' : customer_id,
+      'cart' : arr,
+    });
+    http.Response response = await http.post(
+      API.add_cart_login,
+      headers: <String, String>{
+        'Content_Type': 'application/json; charset=UTF-8'
+      },
+      body: body,
+    );
+    print(response.body);
+    setState(() {
+      loding = true;
+      var res = json.decode(response.body);
+      if(res['status']==2){
+        print("Data Added Succesfully");
+        deleteSp();
+      }else if(res['status']==1){
+        deleteSp();
+      }
+      else{
+        Fluttertoast.showToast(msg: "Error in loading!!",backgroundColor: Constants.PRIMARY_COLOR);
+      }
+    });
+  }
+  deleteSp()async{
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove("Custom_cart");
+    print("Here");
     setState(() {
       loding = true;
     });
-    Navigator.of(context).pop();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Dashboard()));
+    // if (widget.k == 1) {
+    //   Navigator.pop(context);
+    //   Navigator.pushReplacement(
+    //       context, MaterialPageRoute(builder: (context) => MyCart()));
+    // } else if (widget.k == 2) {
+    //   Navigator.pop(context);
+    //   Navigator.pushReplacement(
+    //       context, MaterialPageRoute(builder: (context) => WishList()));
+    // } else
+    // Navigator.of(context).pop();
+    // Navigator.of(context).pop();
+    Navigator.popUntil(context, ModalRoute.withName('/Dashboard'));
+    // Navigator.pushReplacement(
+    //     context, MaterialPageRoute(builder: (context) => Dashboard()));
   }
 }
