@@ -100,6 +100,7 @@ class _DetailedState extends State<Detailed> {
   bool data = false, wishbtn = false;
   Future<void> getProducts() async {
     try{
+      print("CUSTOMER_ID :- "+customer_id);
     print("Product Id:  " + widget.p_id);
     http.Response response = await http.post(API.fetch_detailed, body: {
       'authkey': API.key,

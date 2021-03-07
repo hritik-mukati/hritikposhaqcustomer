@@ -34,12 +34,14 @@ class _DashboardState extends State<Dashboard> {
   List<String> list1 = List();
   List<String> list2 = List();
   List<Map> list3 = List();
+  String cartNumber = "0";
   var responsed;
   List<dynamic> imageList = List<dynamic>();
   bool getimg = false;
   @override
   void initState() {
     super.initState();
+    Constants.setCartCount();
     getSp(0);
     // addimages();// fetch cats
     fetchInnofbanner();
@@ -50,6 +52,7 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       login = prefs.getBool("login") ?? false;
       customer_id = prefs.getString("customer_id") ?? "0";
+      cartNumber = prefs.getString("cartNumber") ?? "0";
       name = prefs.getString("name") ?? "Guest";
     });
     if (i == 0) {
@@ -370,23 +373,39 @@ class _DashboardState extends State<Dashboard> {
                                               ),
                                             ),
                                           ),
-                                          Container(
-                                            width: 40,
-                                            child: IconButton(
-                                              icon: Icon(
-                                                Icons.redeem,
-                                                color: Constants.PRIMARY_COLOR,
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                width: 40,
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.redeem,
+                                                    color: Constants.PRIMARY_COLOR,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        MyCart()))
+                                                        .then((value) => getSp(1));
+                                                  },
+                                                ),
                                               ),
-                                              onPressed: () {
-                                                Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    MyCart()))
-                                                    .then((value) => getSp(1));
-                                              },
-                                            ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                  height: 19,
+                                                  width: 19,
+                                                  child: CircleAvatar(
+                                                    backgroundColor: Colors.black,
+                                                    child: Text(cartNumber,style: TextStyle(color: Colors.white,fontSize: 12),),
+                                                  ),
+                                                  // color: Colors.red,
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -631,19 +650,6 @@ class _DashboardState extends State<Dashboard> {
                   backgroundColor: Constants.ACCENT_COLOR,
                   actions: [
                     IconButton(
-                      icon: Icon(
-                        Icons.redeem,
-                        color: Constants.PRIMARY_COLOR,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyCart()))
-                            .then((value) => getSp(1));
-                      },
-                    ),
-                    IconButton(
                       icon: Icon(Icons.search, color: Constants.PRIMARY_COLOR),
                       onPressed: () {
                         Navigator.push(
@@ -652,6 +658,43 @@ class _DashboardState extends State<Dashboard> {
                                     builder: (context) => Search()))
                             .then((value) => getSp(1));
                       },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0,8,0,8),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 40,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.redeem,
+                                color: Constants.PRIMARY_COLOR,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                            MyCart()))
+                                    .then((value) => getSp(1));
+                              },
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                              height: 19,
+                              width: 19,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.black,
+                                child: Text(cartNumber,style: TextStyle(color: Colors.white,fontSize: 12),),
+                              ),
+                              // color: Colors.red,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -1136,17 +1179,44 @@ class _DashboardState extends State<Dashboard> {
                   .then((value) => getSp(1));
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.redeem,
-              color: Constants.PRIMARY_COLOR,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0,8,0,8),
+            child: Stack(
+              children: [
+                Container(
+                  width: 40,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.redeem,
+                      color: Constants.PRIMARY_COLOR,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                  MyCart()))
+                          .then((value) => getSp(1));
+                    },
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    height: 19,
+                    width: 19,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.black,
+                      child: Text(cartNumber,style: TextStyle(color: Colors.white,fontSize: 12),),
+                    ),
+                    // color: Colors.red,
+                  ),
+                )
+              ],
             ),
-            onPressed: () {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyCart()))
-                  .then((value) => getSp(1));
-            },
           ),
+
         ],
       ),
       body: Container(

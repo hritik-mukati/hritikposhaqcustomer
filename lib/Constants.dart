@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 //PAYTM DETAILS STARTS
 const PAYMENT_URL =
@@ -25,6 +29,66 @@ class Constants {
   static final ACCENT_COLOR = Colors.white;
   static final BACKGROUND_COLOR = Colors.grey[100];
   static final APP_BAR_COLOR = Colors.white;
+
+
+  static setCartCount() async{
+    print("-------------------- SET CART COUNT CALL ---------------------");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var cartNumber = prefs.getString("cartNumber") ?? "0";
+    var login = prefs.getBool("login") ?? false;
+    print(login);
+    if(login){
+     var count = get_cart(prefs.getString("customer_id") ?? "0");
+     print(count);
+     prefs.setString("cartNumber", count);
+    }
+    else{
+      var Custom_cart;
+     Custom_cart = prefs.getString('Custom_cart') ?? [];
+     Custom_cart.length;
+     print(Custom_cart.runtimeType);
+     print(Custom_cart.toString());
+     Custom_cart = jsonDecode(Custom_cart.toString());
+     prefs.setString("cartNumber",Custom_cart.length.toString());
+    }
+    var response = await http.post(API.fetch_cart,body: {
+      "customer_id":"1",
+      "auth_key":API.key
+    });
+  }
+
+  static get_cart(var customer_id) async {
+    print("get_cart calling");
+    print(API.fetch_cart.toString());
+    print(API.key);
+    print(customer_id.toString());
+    var body = {
+      'authkey' : API.key,
+      'customer_id' : customer_id
+    };
+    try{
+      http.Response response = await http.post(
+        API.fetch_cart,body: body,
+      );
+      print(response.body);
+      var res = jsonDecode(response.body);
+      if(response.statusCode==200){
+        if(res['status'] == 2){
+          return res['result'].length;
+        }
+        else{
+          return "0";
+        }
+       }else{
+        return "0";
+       }
+    }
+    catch(e){
+      print(e.runtimeType);
+      print(e);
+      return "0";
+    }
+  }
 }
 
 class API {

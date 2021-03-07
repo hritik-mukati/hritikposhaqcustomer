@@ -66,12 +66,7 @@ class _MyCartState extends State<MyCart> {
     };
     try{
       http.Response response = await http.post(
-        Uri(
-            scheme: 'https',
-            host:"saffronitsystems.com",
-            path: "/dproject/index.php/Customer/getCart"
-        ),
-        body: body,
+        API.fetch_cart,body: body,
       );
       print(response.body);
       if(response.statusCode==200){

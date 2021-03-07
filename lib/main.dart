@@ -45,12 +45,11 @@ class _SplashState extends State<Splash> {
     // TODO: implement initState
     super.initState();
     initDynamicLinks();
+    Constants.setCartCount();
     Firebase.initializeApp();
     firebaseCloudMessaging_Listeners();
     //
   }
-
-
   Future initDynamicLinks() async {
     PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
     Uri deepLink = data?.link;
@@ -93,14 +92,12 @@ class _SplashState extends State<Splash> {
     print("p_id: "+p_id);
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => Detailed(p_id)));
   }
-
   tokens(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("token", token);
     print(token);
     Timer(Duration(milliseconds: 1000), () => getSP());
   }
-
   void firebaseCloudMessaging_Listeners() {
     if (Platform.isIOS) iOS_Permission();
     _firebaseMessaging.getToken().then((tokeen) {
@@ -123,7 +120,6 @@ class _SplashState extends State<Splash> {
       },
     );
   }
-
   void iOS_Permission() {
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true));
@@ -132,7 +128,6 @@ class _SplashState extends State<Splash> {
       print("Settings registered: $settings");
     });
   }
-
   getSP() {
     print("in SP");
     if(link){

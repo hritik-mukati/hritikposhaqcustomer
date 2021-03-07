@@ -936,6 +936,7 @@ class _LoginState extends State<Login> {
       deleteSp();
     }
   }
+
   addItemToCart(String customer_id)async{
     print("in add item to cart");
     var arr = List<Map>();
@@ -974,6 +975,7 @@ class _LoginState extends State<Login> {
         Fluttertoast.showToast(msg: "Error in loading!!",backgroundColor: Constants.PRIMARY_COLOR);
       }
     });
+    Constants.setCartCount();
   }
   deleteSp()async{
     SharedPreferences pref = await SharedPreferences.getInstance();
