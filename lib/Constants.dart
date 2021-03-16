@@ -39,17 +39,17 @@ class Constants {
     print(login);
     if(login){
      var count = get_cart(prefs.getString("customer_id") ?? "0");
-     print(count);
-     prefs.setString("cartNumber", count);
+     print("Count: "+count.toString());
+     return true;
     }
     else{
       var Custom_cart;
      Custom_cart = prefs.getString('Custom_cart') ?? [];
-     Custom_cart.length;
+     // Custom_cart.length;
      print(Custom_cart.runtimeType);
      print(Custom_cart.toString());
      Custom_cart = jsonDecode(Custom_cart.toString());
-     prefs.setString("cartNumber",Custom_cart.length.toString());
+     return true;
     }
     var response = await http.post(API.fetch_cart,body: {
       "customer_id":"1",
@@ -57,6 +57,12 @@ class Constants {
     });
   }
 
+  static setCartValue(String cartLength) async {
+    print("))))))________++++++++"+cartLength);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("cartNumber",cartLength);
+    return true;
+  }
   static get_cart(var customer_id) async {
     print("get_cart calling");
     print(API.fetch_cart.toString());
@@ -66,15 +72,19 @@ class Constants {
       'authkey' : API.key,
       'customer_id' : customer_id
     };
-    try{
+    // try{
       http.Response response = await http.post(
         API.fetch_cart,body: body,
       );
+      print("----------------------------");
       print(response.body);
       var res = jsonDecode(response.body);
       if(response.statusCode==200){
         if(res['status'] == 2){
-          return res['result'].length;
+          print(res['result'].length);
+          int x = res['result'].length;
+          setCartValue(x.toString());
+          return x;
         }
         else{
           return "0";
@@ -82,12 +92,12 @@ class Constants {
        }else{
         return "0";
        }
-    }
-    catch(e){
-      print(e.runtimeType);
-      print(e);
-      return "0";
-    }
+    // }
+    // catch(e){
+    //   print(e.runtimeType);
+    //   print(e);
+    //   return "0";
+    // }
   }
 }
 

@@ -238,6 +238,8 @@ class _DetailedState extends State<Detailed> {
     cart_size = prefs.getString('cart_size') ?? "0";
     cart_size_name = prefs.getString('cart_size_name') ?? "0";
     Custom_cart = prefs.getString('Custom_cart') ?? [];
+    cartNumber = prefs.getString("cartNumber") ?? "0";
+
     print(Custom_cart);
     if(Custom_cart.length!=0){
       Custom_cart = jsonDecode(Custom_cart);
@@ -261,6 +263,7 @@ class _DetailedState extends State<Detailed> {
     heightAppBar = 450;
     getSp();
   }
+  String cartNumber = "0";
 
   void share() async{
     var url = await buildUrl(widget.p_id);
@@ -483,17 +486,51 @@ class _DetailedState extends State<Detailed> {
                                         builder: (context) => Dashboard()));
                               },
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.redeem,
-                                color: Constants.PRIMARY_COLOR,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MyCart())).then((value) => login?print(""):getCustomCart());
-                              },
+                            // IconButton(
+                            //   icon: Icon(
+                            //     Icons.redeem,
+                            //     color: Constants.PRIMARY_COLOR,
+                            //   ),
+                            //   onPressed: () {
+                            //     Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) => MyCart())).then((value) => login?print(""):getCustomCart());
+                            //   },
+                            // ),
+                            Stack(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.redeem,
+                                      color: Constants.PRIMARY_COLOR,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                  MyCart()))
+                                          .then((value) => getSp());
+                                    },
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    height: 19,
+                                    width: 19,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.black,
+                                      child: Text(cartNumber,style: TextStyle(color: Colors.white,fontSize: 12),),
+                                    ),
+                                    // color: Colors.red,
+                                  ),
+                                )
+                              ],
                             ),
                           ],
                           flexibleSpace: FlexibleSpaceBar(
@@ -1261,6 +1298,10 @@ class _DetailedState extends State<Detailed> {
   addtoSP() async {
     print("Add TO SP");
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    var x = prefs.getString("cartNumber")??"0";
+    prefs.setString("cartNumber", (int.parse(x)+1).toString());
+    print("________________________---------------");
+    print(int.parse(x)+1);
     prefs.setString("Custom_cart", jsonEncode(Custom_cart));
     print(jsonDecode(prefs.getString("Custom_cart")));
     setState(() {
@@ -1283,6 +1324,7 @@ class _DetailedState extends State<Detailed> {
       print(Custom_cart);
       print("adding");
       Custom_cart.add(Custom_cart_data);
+      addCartCount();
       print(Custom_cart);
       loding = true;
       addtoSP();
@@ -1337,6 +1379,7 @@ class _DetailedState extends State<Detailed> {
         if (resp['status'] == 2) {
           Fluttertoast.showToast(msg: resp['message'].toString());
           print("Added to customer cart: " + customer_id);
+          cartNumber = (int.parse(cartNumber)+1).toString();
           // Navigator.push(
           //     context, MaterialPageRoute(builder: (context) => MyCart()));
         } else {
@@ -1344,6 +1387,12 @@ class _DetailedState extends State<Detailed> {
         }
       });
     }
+  }
+  addCartCount()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var x = prefs.getString("cartNumber");
+    cartNumber = prefs.getString("cartNumber");
+    prefs.setString("cartNumber", (int.parse(x)+1).toString());
   }
   bool wishload = false;
   add_wish_list() async {

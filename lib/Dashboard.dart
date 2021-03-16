@@ -49,12 +49,14 @@ class _DashboardState extends State<Dashboard> {
 
   getSp(int i) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("In getSP("+i.toString()+")");
     setState(() {
       login = prefs.getBool("login") ?? false;
       customer_id = prefs.getString("customer_id") ?? "0";
       cartNumber = prefs.getString("cartNumber") ?? "0";
       name = prefs.getString("name") ?? "Guest";
     });
+    print("Cart Count:  "+cartNumber);
     if (i == 0) {
       getCats(); //
     }
@@ -262,33 +264,6 @@ class _DashboardState extends State<Dashboard> {
       imageList.add(
           "https://t3.ftcdn.net/jpg/02/20/14/38/360_F_220143804_fc4xRygvJ8bn8JPQumtHJieDN4ORNyjs.jpg");
     }
-  }
-
-  Widget image_slider(var Context) {
-    Container(
-      height: 200,
-      child: getimg
-          ? Carousel(
-              boxFit: BoxFit.fill,
-              // images: imageList,
-              autoplay: true,
-              showIndicator: true,
-              dotSize: 5.0,
-              dotSpacing: 20.0,
-              dotBgColor: Constants.ACCENT_COLOR,
-              indicatorBgPadding: 0.0,
-              dotColor: Constants.PRIMARY_COLOR,
-              images: [
-                NetworkImage(
-                    'https://cdn-images-1.medium.com/max/2000/1*GqdzzfB_BHorv7V2NV7Jgg.jpeg'),
-                NetworkImage(
-                    'https://cdn-images-1.medium.com/max/2000/1*wnIEgP1gNMrK5gZU7QS0-A.jpeg'),
-              ],
-            )
-          : Center(
-              child: ProgressDailog().Progress(context),
-            ),
-    );
   }
 
   @override
@@ -1228,21 +1203,21 @@ class _DashboardState extends State<Dashboard> {
               height: height / 3.5,
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, bottom: 0.0),
-                child: getimg
-                    ? Carousel(
-                        boxFit: BoxFit.fill,
-                        images: imageList,
-                        autoplay: true,
-                        showIndicator: true,
-                        dotSize: 5.0,
-                        dotSpacing: 20.0,
-                        dotBgColor: Constants.ACCENT_COLOR,
-                        indicatorBgPadding: 0.0,
-                        dotColor: Constants.PRIMARY_COLOR,
-                      )
-                    : Center(
-                        child: ProgressDailog().Progress(context),
-                      ),
+                // child: getimg
+                //     ? Carousel(
+                //         boxFit: BoxFit.fill,
+                //         images: imageList,
+                //         autoplay: true,
+                //         showIndicator: true,
+                //         dotSize: 5.0,
+                //         dotSpacing: 20.0,
+                //         dotBgColor: Constants.ACCENT_COLOR,
+                //         indicatorBgPadding: 0.0,
+                //         dotColor: Constants.PRIMARY_COLOR,
+                //       )
+                //     : Center(
+                //         child: ProgressDailog().Progress(context),
+                //       ),
               ),
             ),
             Center(
@@ -1314,7 +1289,7 @@ class _DashboardState extends State<Dashboard> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                NewProducts()));
+                                                NewProducts())).then((value) => getSp(1));
                                   },
                                   color: Colors.black,
                                   child: Text(
@@ -1343,7 +1318,7 @@ class _DashboardState extends State<Dashboard> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => BannerPage("80% OFF", "0")));
+                          builder: (context) => BannerPage("80% OFF", "0"))).then((value) => getSp(1));
                 },
                 child: Image.asset("images/Dashbord/offer1.PNG")),
             GestureDetector(
@@ -1385,7 +1360,7 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Detailed(p_id)));
+                                    builder: (context) => Detailed(p_id))).then((value) => getSp(1));
                           },
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(4, 12, 0, 0),
@@ -1427,7 +1402,7 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Detailed(p_id)));
+                                    builder: (context) => Detailed(p_id))).then((value) => getSp(1));
                           },
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 4, 12),
@@ -1481,7 +1456,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductByCatName("Western Wear")));
+                                          ProductByCatName("Western Wear"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1519,7 +1494,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductByCatName("Shorts & Skirts")));
+                                          ProductByCatName("Shorts & Skirts"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1562,7 +1537,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ProductByCatName(
-                                          "Sweaters & Sweatshirts")));
+                                          "Sweaters & Sweatshirts"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1600,7 +1575,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductByCatName("Foot-wear")));
+                                          ProductByCatName("Foot-wear"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1643,7 +1618,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductByCatName("Ethnic Dresses")));
+                                          ProductByCatName("Ethnic Dresses"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1681,7 +1656,7 @@ class _DashboardState extends State<Dashboard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductByCatName("Party Dresses")));
+                                          ProductByCatName("Party Dresses"))).then((value) => getSp(1));
                             },
                             child: Container(
                                 height: 150,
@@ -1847,7 +1822,7 @@ class _NotificationState extends State<Notification> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MyOrder("My Orders", "0")));
+                          builder: (context) => MyOrder("My Orders", "0"))).then((value) => getSp());
                 },
                 child: Container(
                   child: Row(

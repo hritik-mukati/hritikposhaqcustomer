@@ -22,6 +22,7 @@ class _MyCartState extends State<MyCart> {
   bool loding = false,login = false,no_data = true;
   int total = 0;
   String address;
+  int cartlength;
   String customer_id,cart_data,cart_color,cart_size,cart_size_name;
   List ids,clrs,sizes,sizes_name;
   List<dynamic> cart = List();
@@ -43,14 +44,17 @@ class _MyCartState extends State<MyCart> {
     }else{
       print("login "+ login.toString());
       if(Custom_cart.length!=0){
+        cartlength = Custom_cart.length;
         print("data in ofline cart");
         print(Custom_cart);
+        updateCartCount(Custom_cart!=null?Custom_cart.length.toString():"0");
         get_static_cart();
       }else{
         print("in cart empty, and login false");
         setState(() {
           loding = true;
           no_data = true;
+          updateCartCount("0");
         });
       }
     }
@@ -85,10 +89,11 @@ class _MyCartState extends State<MyCart> {
             no_data = true;
             cart = List();
           }
-
           setState(() {
             Custom_cart = cart;
+            cartlength = Custom_cart.length;
           });
+          updateCartCount(Custom_cart!=null?Custom_cart.length.toString():"0");
           loding = true;
         });
       }else{
@@ -127,6 +132,12 @@ class _MyCartState extends State<MyCart> {
         });
       }
     }
+  }
+  updateCartCount(String count) async {
+    print("/////////////////////////////");
+    print(count);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("cartNumber", count);
   }
   @override
   void initState() {
@@ -456,6 +467,7 @@ class _MyCartState extends State<MyCart> {
         var res = json.decode(response.body);
         if(res['status']==2) {
           Navigator.of(context).pop();
+          updateCartCount((cartlength-1).toString());
           get_cart();
         }else if(res['status']==1){
           Fluttertoast.showToast(msg: res['message']);
@@ -470,6 +482,7 @@ class _MyCartState extends State<MyCart> {
        Navigator.of(context).pop();
        print(Custom_cart);
        print("-----------------------");
+       updateCartCount(Custom_cart.length.toString());
        print("Cart Length: "+Custom_cart.length.toString());
        if(Custom_cart.length>0){
          settingSp(Custom_cart, price);

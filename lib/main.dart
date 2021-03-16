@@ -96,7 +96,7 @@ class _SplashState extends State<Splash> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("token", token);
     print(token);
-    Timer(Duration(milliseconds: 1000), () => getSP());
+    Timer(Duration(milliseconds: 4000), () => getSP());
   }
   void firebaseCloudMessaging_Listeners() {
     if (Platform.isIOS) iOS_Permission();
