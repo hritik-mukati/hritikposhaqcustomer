@@ -311,7 +311,7 @@ class _MyCartState extends State<MyCart> {
                               onPressed: (){
                                 print("delete from: "+index.toString());
                                 showDialog(context: context,
-                                  child: AlertDialog(
+                                  builder: (_) => AlertDialog(
                                     title: Text("Delete From Cart"),
                                     actions: [
                                       RaisedButton(

@@ -710,7 +710,7 @@ class _DashboardState extends State<Dashboard> {
                                         } else if (login == true) {
                                           showDialog(
                                             context: context,
-                                            child: AlertDialog(
+                                            builder: (_) => AlertDialog(
                                               title: Text("Log Out ?"),
                                               actions: [
                                                 RaisedButton(
