@@ -39,6 +39,14 @@
           }
         },
         {
+          "client_id": "340001960799-e6h00123lmemggo0dp2a9mo5es2p8r12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.poshaq.customer",
+            "certificate_hash": "dacc7f3026e0ded8b3aed6976f81a3b78ff0ab39"
+          }
+        },
+        {
           "client_id": "340001960799-p4k4m46d4rl4qtu9si2kq96bfimnc7ea.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

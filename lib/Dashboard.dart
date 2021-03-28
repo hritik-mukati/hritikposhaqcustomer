@@ -243,7 +243,7 @@ class _DashboardState extends State<Dashboard> {
         'authkey': API.key,
       });
       print(response.body);
-      setState(() {
+      setState(() async{
         getTrending();
         getimg = true;
         var responsed = json.decode(response.body);
@@ -258,6 +258,8 @@ class _DashboardState extends State<Dashboard> {
           imageList.add(NetworkImage(
               "https://t3.ftcdn.net/jpg/02/20/14/38/360_F_220143804_fc4xRygvJ8bn8JPQumtHJieDN4ORNyjs.jpg"));
         }
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        cartNumber = prefs.getString("cartNumber") ?? "0";
       });
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
@@ -1203,21 +1205,21 @@ class _DashboardState extends State<Dashboard> {
               height: height / 3.5,
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, bottom: 0.0),
-                // child: getimg
-                //     ? Carousel(
-                //         boxFit: BoxFit.fill,
-                //         images: imageList,
-                //         autoplay: true,
-                //         showIndicator: true,
-                //         dotSize: 5.0,
-                //         dotSpacing: 20.0,
-                //         dotBgColor: Constants.ACCENT_COLOR,
-                //         indicatorBgPadding: 0.0,
-                //         dotColor: Constants.PRIMARY_COLOR,
-                //       )
-                //     : Center(
-                //         child: ProgressDailog().Progress(context),
-                //       ),
+                child: getimg
+                    ? Carousel(
+                        boxFit: BoxFit.fill,
+                        images: imageList,
+                        autoplay: true,
+                        showIndicator: true,
+                        dotSize: 5.0,
+                        dotSpacing: 20.0,
+                        dotBgColor: Constants.ACCENT_COLOR,
+                        indicatorBgPadding: 0.0,
+                        dotColor: Constants.PRIMARY_COLOR,
+                      )
+                    : Center(
+                        child: ProgressDailog().Progress(context),
+                      ),
               ),
             ),
             Center(

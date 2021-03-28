@@ -1298,10 +1298,8 @@ class _DetailedState extends State<Detailed> {
   addtoSP() async {
     print("Add TO SP");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var x = prefs.getString("cartNumber")??"0";
-    prefs.setString("cartNumber", (int.parse(x)+1).toString());
     print("________________________---------------");
-    print(int.parse(x)+1);
+
     prefs.setString("Custom_cart", jsonEncode(Custom_cart));
     print(jsonDecode(prefs.getString("Custom_cart")));
     setState(() {
@@ -1379,7 +1377,7 @@ class _DetailedState extends State<Detailed> {
         if (resp['status'] == 2) {
           Fluttertoast.showToast(msg: resp['message'].toString());
           print("Added to customer cart: " + customer_id);
-          cartNumber = (int.parse(cartNumber)+1).toString();
+          addCartCount();
           // Navigator.push(
           //     context, MaterialPageRoute(builder: (context) => MyCart()));
         } else {
@@ -1391,8 +1389,12 @@ class _DetailedState extends State<Detailed> {
   addCartCount()async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var x = prefs.getString("cartNumber");
+    print("x:  "+x.toString());
     cartNumber = prefs.getString("cartNumber");
+    print("Before: "+cartNumber.toString());
     prefs.setString("cartNumber", (int.parse(x)+1).toString());
+    cartNumber= (int.parse(cartNumber.toString())+1).toString();
+    print("After: "+cartNumber.toString());
   }
   bool wishload = false;
   add_wish_list() async {

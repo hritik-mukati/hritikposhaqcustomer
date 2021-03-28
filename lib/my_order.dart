@@ -89,7 +89,7 @@ class _MyOrderState extends State<MyOrder> {
       getdata(customer_id);
     }else{
       Fluttertoast.showToast(msg: "Login First to view Orders!");
-      // Navigator.of(context).pop();
+      Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context)=>Login(3))).then((value) => getSp());
     }
   }

@@ -435,6 +435,7 @@ class _GoogleLoginState extends State<GoogleLogin> {
     pref.remove("Custom_cart");
     print("Here");
     setState(() {
+      Constants.setCartCount();
       loding = true;
     });
     // if (widget.k == 1) {

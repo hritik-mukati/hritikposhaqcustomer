@@ -975,11 +975,13 @@ class _LoginState extends State<Login> {
         Fluttertoast.showToast(msg: "Error in loading!!",backgroundColor: Constants.PRIMARY_COLOR);
       }
     });
-    Constants.setCartCount();
   }
   deleteSp()async{
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove("Custom_cart");
+    setState(() {
+      Constants.setCartCount();
+    });
     print("Here");
     // if (widget.k == 1) {
     //   Navigator.pop(context);
