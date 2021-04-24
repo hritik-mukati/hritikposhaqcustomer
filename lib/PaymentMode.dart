@@ -167,6 +167,7 @@ class _PaymentModeState extends State<PaymentMode> {
       print(response.body);
       setState(() {
         load = true;
+        cartCount();
         var responsed = json.decode(response.body);
         if(responsed['status']==2){
           print("Done");
@@ -182,9 +183,10 @@ class _PaymentModeState extends State<PaymentMode> {
           });
           if(_value == 1) {
             // Navigator.of(context).popUntil((route) => route.isFirst);
-            Navigator.of(context).pop();
             // Navigator.of(context).pop();
             // Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.pushReplacement(context, MaterialPageRoute(
                 builder: (context) =>
                     FinalPage(responsed['order_id'].toString())));
@@ -199,5 +201,9 @@ class _PaymentModeState extends State<PaymentMode> {
           Fluttertoast.showToast(msg: responsed['message'],backgroundColor: Constants.PRIMARY_COLOR,textColor: Constants.ACCENT_COLOR);
         }
       });
+  }
+  cartCount()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("cartNumber", "0");
   }
 }

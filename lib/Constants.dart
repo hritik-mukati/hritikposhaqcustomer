@@ -145,8 +145,7 @@ class API {
   //product
   static var fetch_all_cat = BaseUrl + "Customer/getAllCategory";
   static var fetch_product = BaseUrl + "Product/getProductByCategory";
-  static var fetch_product_by_catname =
-      BaseUrl + "Customer/getProductByCatName";
+  static var fetch_product_by_catname = BaseUrl + "Customer/getProductByCatName";
 
   static var fetch_new_product = BaseUrl + "Customer/getNewProducts";
   static var fetch_detailed = BaseUrl + "Product/getProductDetailById";

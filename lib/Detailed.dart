@@ -112,6 +112,7 @@ class _DetailedState extends State<Detailed> {
     setState(() {
       responsed = json.decode(response.body);
       if (responsed['status'] == 2) {
+        imageList = [];
         loding = true;
         data = false;
         var images = responsed['result'][0]['images'];
@@ -525,7 +526,7 @@ class _DetailedState extends State<Detailed> {
                                     width: 19,
                                     child: CircleAvatar(
                                       backgroundColor: Colors.black,
-                                      child: Text(cartNumber,style: TextStyle(color: Colors.white,fontSize: 12),),
+                                      child: Text(cartNumber!=null?cartNumber:"0",style: TextStyle(color: Colors.white,fontSize: 12),),
                                     ),
                                     // color: Colors.red,
                                   ),

@@ -127,15 +127,18 @@ class _MyOrderState extends State<MyOrder> {
       )
           : ListView.builder(
         shrinkWrap: true,
+        reverse: true,
+        itemCount: listpending.length,
         itemBuilder: (BuildContext context,int index){
           var orderdate = listpending[index]['doa'].toString();
+          print("/////////////////////////////////");
+          print("date: "+listpending[index]['doa'].toString());
           var prevMonth = new DateTime(int.parse(orderdate.substring(0,4)),int.parse(orderdate.substring(5,7)), int.parse(orderdate.substring(8,10)));
-          var formatter = DateFormat("d-MMMM-y");
-
+          var formatter = DateFormat("dd-MMMM-y");
           var status_id = listpending[index]['status_id'].toString();
           var status = Container();
           if(status_id == '1'){
-            status =   Container(
+            status =  Container(
                 height: 25,
                 width: 80,
                 decoration: new BoxDecoration(
@@ -154,7 +157,7 @@ class _MyOrderState extends State<MyOrder> {
                 ),
                 child: Center(child: Text("Pending",style: TextStyle(color:Colors.white),)));
           }
-          if(status_id == '2'){
+          else if(status_id == '2'){
             status =   Container(
                 height: 25,
                 width: 80,
@@ -174,8 +177,7 @@ class _MyOrderState extends State<MyOrder> {
                 ),
                 child: Center(child: Text("Dispatch",style: TextStyle(color:Colors.white),)));
           }
-          else{
-            if(status_id == '3'){
+          else if(status_id == '3'){
               status =   Container(
                   height: 25,
                   width: 80,
@@ -195,8 +197,7 @@ class _MyOrderState extends State<MyOrder> {
                   ),
                   child: Center(child: Text("Delivered",style: TextStyle(color:Colors.white),)));
             }
-            else{
-              if(status_id == '4'){
+          else if(status_id == '4'){
                 status =   Container(
                     height: 25,
                     width: 80,
@@ -216,7 +217,45 @@ class _MyOrderState extends State<MyOrder> {
                     ),
                     child: Center(child: Text("Cancelled",style: TextStyle(color:Colors.white),)));
               }
-            }
+          else if(status_id == '5'){
+            status =   Container(
+                height: 25,
+                width: 80,
+                decoration: new BoxDecoration(
+                  color: Colors.grey,
+                  boxShadow:[
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5.0, // soften the shadow
+                      spreadRadius: 2.0, //extend the shadow
+                      offset: Offset(
+                        5.0, // Move to right 10  horizontally
+                        5.0, // Move to bottom 10 Vertically
+                      ),
+                    ),
+                  ],
+                ),
+                child: Center(child: Text("Return...",style: TextStyle(color:Colors.white),)));
+          }
+          else if(status_id == '6'){
+            status =   Container(
+                height: 25,
+                width: 80,
+                decoration: new BoxDecoration(
+                  color: Colors.brown,
+                  boxShadow:[
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5.0, // soften the shadow
+                      spreadRadius: 2.0, //extend the shadow
+                      offset: Offset(
+                        5.0, // Move to right 10  horizontally
+                        5.0, // Move to bottom 10 Vertically
+                      ),
+                    ),
+                  ],
+                ),
+                child: Center(child: Text("Returned",style: TextStyle(color:Colors.white),)));
           }
           orderdate = formatter.format(prevMonth).toString();
           return GestureDetector(
@@ -438,7 +477,7 @@ class _MyOrderState extends State<MyOrder> {
             ),
           );
         },
-        itemCount: listpending.length,)
+      )
           : Container(
         height: MediaQuery.of(context).size.height,
         child: Center(child: Column(
@@ -460,7 +499,11 @@ class _MyOrderState extends State<MyOrder> {
             ),
           ],
         ),),)
-          : Container(child: Center(child: ProgressDailog().Progress(context),),)
+          : Container(
+              child: Center(
+                        child: ProgressDailog().Progress(context),
+                      ),
+              )
           : Container(
         height: MediaQuery.of(context).size.height,
         child: Center(child: Column(
@@ -513,17 +556,18 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
 
   var load = false;
   var data;
-  var data1 ;
+  var data1;
+  int status=0;
+  var different;
 
   fetchOrderDetail() async {
-    print("in orde deTALI");
     setState(() {
       load = false;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var vendor = prefs.getString("vendor_id") ?? '0';
 
-    try{
+    // try{
       http.Response response = await http.post(
           API.fetchmyordersdetailed,
           body: {
@@ -541,19 +585,36 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
             data1 = resd["result"];
             print("Data is here: ");
             print(data);
+            setState(() {
+              String sstatus = data[0]["status_id"].toString();
+              status = int.parse(sstatus.toString());
+              // status = 6;
+              String doa =data[0]['doa'].toString();
+              String year = doa.substring(0,4);
+              String month = doa.substring(5,7);
+              String days = doa.substring(8,10);
+              final birthday = DateTime(int.parse(year), int.parse(month), int.parse(days));
+              final date2 = DateTime.now();
+              setState(() {
+                different = date2.difference(birthday).inDays;
+                // different = 9;
+              });
+              print("Different = "+different.toString());
+            });
+            print(status);
           }
           else {
             Fluttertoast.showToast(msg: "Unable to fetch Data");
           }
         }
       });
-    }catch(e){
-      Fluttertoast.showToast(msg: e.toString());
-      // Navigator.pop(context);
-      print(e.toString());
-    }
+    // }catch(e){
+    //   Fluttertoast.showToast(msg: e.toString());
+    //   // Navigator.pop(context);
+    //   print(e.toString());
+    // }
   }
-  cancelOrder(String id,String type)async{
+  updateOrder(String id,String type)async{
     setState(() {
       load = false;
       print("got data");
@@ -586,8 +647,9 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
         else{
           print("else");
           load  = true;
+          Navigator.pop(context);
         }
-        initState();
+        // initState();
       });
     }catch(e){
       Fluttertoast.showToast(msg: e.toString());
@@ -623,7 +685,8 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
-                            child: Line(int.parse(data1[0]['status_id'])),
+                             child: Line(status),
+                            // child: Line(int.parse(data1[0]['status_id'])),
                           ),
                         ),
                         Padding(
@@ -774,23 +837,23 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(Radius.circular(12))
                           ),
-                          child: data1[0]['status_id'] == "3" ? GestureDetector(
+                          child: GestureDetector(
                             onTap: (){
-                              showDialog(
+                              status==1 || status==2 || (status==3 && different < 11)?showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   // return object of type Dialog
                                   return AlertDialog(
-                                    title: new Text("Cancel Order?"),
+                                    title: status<3?Text("Cancel Order?"):status==3?Text("Return Product"):Center(),
                                     content: loadalert ? Container(
                                       child: Wrap(
                                         direction: Axis.vertical,
                                         children: <Widget>[
                                           SizedBox(
                                               width: 200,
-                                              child: new Text(
-                                                "Do you want to return Product?",
-                                                maxLines: 3,)),
+                                              child: status<3 ?Text(
+                                                "Do you want to Cancel Order?",
+                                                maxLines: 3,):status==3?Text("Do you want to Return Product?"):Text("")),
                                           Text(""),
                                           Row(
                                             children: <Widget>[
@@ -817,7 +880,22 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                       FlatButton(
                                         child: new Text("Yes"),
                                         onPressed: () {
-                                          cancelOrder(data1[0]['order_id'].toString(), "4");
+                                          String type;
+                                          setState(() {
+                                            if(status<3){
+                                              type = "4";
+                                            } else if(status == 3){
+                                              type = "5";
+                                            }
+                                          });
+                                          updateOrder(data1[0]['order_id'].toString(), type.toString());
+                                          setState(() {
+                                            if(status<3){
+                                              status =4;
+                                            } else if(status == 3){
+                                              status = 5;
+                                            }
+                                          });
 //                                                Fluttertoast.showToast(msg: "Yes Order Delivered");
 //                                         if(data1[0]['status_id']==1){
 //                                           updateStatus(2, data1[0]['order_id']);
@@ -829,11 +907,13 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                     ],
                                   );
                                 },
-                              );
+                              ):status==4?Fluttertoast.showToast(msg: "You Canceled the order!")
+                                  :status==5?Fluttertoast.showToast(msg: "Applied for return!!")
+                                  :Fluttertoast.showToast(msg: "Cannot Return The Product");
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.green,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.all(Radius.circular(12)),
                                   border: Border.all(color: Colors.green)
                               ),
@@ -843,12 +923,12 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     Text("\u20B9 " + data1[0]['selling_price'],
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(color: Constants.PRIMARY_COLOR,
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold),),
                                     Container(
                                         decoration: BoxDecoration(
-                                            color: Colors.green,
+                                            color: status<3 || status ==4?Colors.red:status>4?Colors.grey:Colors.green,
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(12)),
                                             border: Border.all(color: Colors.green)
@@ -857,143 +937,37 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                                           padding: const EdgeInsets.all(3.0),
                                           child: Row(
                                             children: <Widget>[
-                                              Text("Return",
+                                              status<3?Text("Cancel Order",
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 24,
-                                                    fontWeight: FontWeight.bold),),
+                                                    fontWeight: FontWeight.bold),)
+                                                  :status ==4?Text("Canceled",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold),)
+                                                  :status==3&& different <11?Text("Return",style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold),)
+                                                  :status==5?Text("Applied To Return",overflow: TextOverflow.ellipsis,style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold),)
+                                                  :status == 6?Text("Returned",overflow: TextOverflow.ellipsis,style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold),):Text("Delivered",overflow: TextOverflow.ellipsis,style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold),)
                                             ],
                                           ),
                                         )),
                                   ],
                                 ),
                               ),
-                            ),
-                          )
-                              : data1[0]['status_id'] == "4" ? Container(
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.all(Radius.circular(12)),
-                                border: Border.all(color: Colors.red)
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text("\u20B9 " + data1[0]['selling_price'],
-                                    style: TextStyle(color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold),),
-                                  Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(12)),
-                                          border: Border.all(color: Colors.red)
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(3.0),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Text("Cancelled",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold),),
-                                          ],
-                                        ),
-                                      )),
-                                ],
-                              ),
-                            ),
-                          )
-                              : GestureDetector(
-                            onTap: () {
-                              loadalert ?  showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  // return object of type Dialog
-                                  return AlertDialog(
-                                    title: new Text("Cancel Order?"),
-                                    content: loadalert ? Container(
-                                      child: Wrap(
-                                        direction: Axis.vertical,
-                                        children: <Widget>[
-                                          SizedBox(
-                                              width: 200,
-                                              child: new Text(
-                                                "The order is confirmed to be delivered. Do you want to Cancel it?",
-                                                maxLines: 3,)),
-                                          Text(""),
-                                          Row(
-                                            children: <Widget>[
-                                              Text("Total Amount: "),
-                                              Text("\u20B9 " +
-                                                  data1[0]['selling_price']
-                                                      .toString(),
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18),)
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ) : ProgressDailog().Progress(context),
-                                    actions: <Widget>[
-                                      // usually buttons at the bottom of the dialog
-                                      new FlatButton(
-                                        child: new Text("No"),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      FlatButton(
-                                        child: new Text("Yes"),
-                                        onPressed: () {
-                                          cancelOrder(data1[0]['order_id'].toString(), "4");
-//                                                Fluttertoast.showToast(msg: "Yes Order Delivered");
-//                                         if(data1[0]['status_id']==1){
-//                                           updateStatus(2, data1[0]['order_id']);
-//                                         }else if(data1[0]['status_id']=="2"){
-//                                           updateStatus(3, data1[0]['order_id']);
-//                                         }
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ):Center();
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text("\u20B9 " + data1[0]['selling_price'],
-                                  style: TextStyle(color: Colors.green,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold),),
-                                Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(12)),
-                                        border: Border.all(color: Colors.red)
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text(data1[0]['status_id']=="1"?"Cancel Order":data1[0]['status_id']=="2"?"Cancel Order":"",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold),),
-                                          Icon(Icons.arrow_forward_ios,
-                                            color: Colors.white,),
-                                        ],
-                                      ),
-                                    )),
-                              ],
                             ),
                           ),
                         )

@@ -66,6 +66,7 @@ class _FinalPageState extends State<FinalPage> {
                     ),
                     FlatButton(
                       onPressed: () {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

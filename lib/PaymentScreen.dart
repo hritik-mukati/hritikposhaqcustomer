@@ -42,6 +42,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final paytmResponse = responseJSON["data"];
       print(responseJSON.toString());
       if (paytmResponse["STATUS"] == "TXN_SUCCESS") {
+        Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => FinalPage(ORDER_ID)));
 
@@ -163,6 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (respose.statusCode == 200) {
         var responsed = json.decode(respose.body);
         if (responsed['status'] == 2) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => FinalPage(ORDER_ID)));
         } else {
@@ -198,6 +200,7 @@ class NetworkErrorScreen extends StatelessWidget {
       if (respose.statusCode == 200) {
         var responsed = json.decode(respose.body);
         if (responsed['status'] == 2) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => FinalPage(ORDER_ID)));
         } else {
