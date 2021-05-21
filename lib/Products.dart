@@ -91,9 +91,9 @@ class _ProductsState extends State<Products> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Network Issues plz relode"),
+            Text("Network Issues please reload"),
             RaisedButton(
-              child: Text("Relode"),
+              child: Text("Reload"),
               onPressed: (){
                 getProducts();
               },

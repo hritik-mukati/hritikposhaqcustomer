@@ -94,7 +94,7 @@ class _WishListState extends State<WishList> {
                       FlatButton(
                         color: Colors.black,
                         child: Text(
-                          "Relod",
+                          "Reload",
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {

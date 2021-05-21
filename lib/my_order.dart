@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dproject/PaymentScreen.dart';
 import 'package:dproject/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +32,13 @@ class _MyOrderState extends State<MyOrder> {
   }
   var listpending;
   getdata(String id)async{
+    print("In get Orders");
     setState(() {
       error = true;
       load = false;
       print("got data");
       print(widget.type);
+      listpending = null;
     });
     try{
       http.Response response = await http.post(
@@ -98,6 +101,12 @@ class _MyOrderState extends State<MyOrder> {
     // TODO: implement initState
     super.initState();
     getSp();
+  }
+  paynow(String id, String price) async{
+    var order = [{'id': id}];
+    var total = price;
+    print(order);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> PaymentScreen(amount: total.toString(),order : order)));
   }
   @override
   Widget build(BuildContext context) {
@@ -261,7 +270,9 @@ class _MyOrderState extends State<MyOrder> {
           return GestureDetector(
             onTap: (){
 //              Navigator.push(context, MaterialPageRoute(builder: (context)=>Detail(listpending[index]["p_id"].toString())));
-              _showModal(context,listpending[index]["order_id"].toString());
+            listpending[index]["status_id"].toString()!="4" && listpending[index]["payment_mode"].toString()=="2" && listpending[index]["paytm_order_id"].toString()=="null"?
+                print("Not paid!!")
+                : _showModal(context,listpending[index]["order_id"].toString());
             },
             child: Padding(
               padding: EdgeInsets.only(top:2.0,left:8,right: 8),
@@ -410,7 +421,7 @@ class _MyOrderState extends State<MyOrder> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text("Payment",style: TextStyle(fontWeight: FontWeight.bold),),
                                     ),
-                                    Text(listpending[index]["payment_mode"].toString()=="2"?"PREPAID":"COD"),
+                                    Text(listpending[index]["payment_mode"].toString()=="2"?listpending[index]["paytm_order_id"].toString()!="null"?"PREPAID":"PAY NOW":"COD"),
                                   ],
                                 ),
                               )),
@@ -465,9 +476,102 @@ class _MyOrderState extends State<MyOrder> {
                               )),
                             ],
                           ),
+                          listpending[index]["status_id"].toString()=="1"?
+                          listpending[index]["paytm_order_id"].toString()=="null" && listpending[index]["payment_mode"].toString()=="2"?
+                          Column(
+                            children: [
+                              Container(
+                                color: Colors.blueGrey,
+                                height: 1,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    RaisedButton(
+                                      child: Text("Pay Now",style: TextStyle(color:Constants.ACCENT_COLOR),),
+                                      color: Constants.PRIMARY_COLOR,
+                                      onPressed: (){
+                                        print("PayNow");
+                                        paynow(listpending[index]["order_id"].toString(), listpending[index]["selling_price"].toString());
+                                      },
+                                    ),
+                                    RaisedButton(
+                                      color: Colors.red,
+                                      child: Text("Cancel Order",style: TextStyle(color:Constants.PRIMARY_COLOR),),
+                                      onPressed: (){
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            // return object of type Dialog
+                                            return AlertDialog(
+                                              title: Text("Cancel Order?"),
+                                              content: Container(
+                                                child: Wrap(
+                                                  direction: Axis.vertical,
+                                                  children: <Widget>[
+                                                    SizedBox(
+                                                        width: 200,
+                                                        child: Text(
+                                                          "Do you want to Cancel Order?",
+                                                          maxLines: 3,)),
+                                                    Text(""),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        Text("Total Amount: "),
+                                                        Text("\u20B9 " +
+                                                            listpending[index]['selling_price'].toString(),
+                                                          style: TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 18),)
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              actions: <Widget>[
+                                                // usually buttons at the bottom of the dialog
+                                                new FlatButton(
+                                                  child: new Text("No"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                FlatButton(
+                                                  child: new Text("Yes"),
+                                                  onPressed: () {
+                                                    String type;
+                                                    setState(() {
+                                                    });
+                                                    updateOrder(listpending[index]["order_id"].toString(),"4");
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                          :Center():Center(),
                         ],
                       ),
                     ),
+                    listpending[index]["status_id"].toString()=="1"?
+                    listpending[index]["paytm_order_id"].toString()=="null" && listpending[index]["payment_mode"].toString()=="2"
+                        ?Container(
+                      // height: 20,
+                      color:Colors.red,
+                      child:Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Text("*To confirm Order Pay Now", style: TextStyle(fontSize:12,color:Colors.white),),
+                      ),
+                    ):Center():Center(),
                     Align(
                         alignment: Alignment.topRight,
                         child: status),
@@ -527,8 +631,45 @@ class _MyOrderState extends State<MyOrder> {
         ),),)
     );
   }
+  updateOrder(id,type)async{
+    print("ID: "+id);
+    print("TYPE: "+type);
+    setState(() {
+      load = false;
+    });
+    http.Response response = await http.post(
+        API.updateOrderStatus,
+        body: {
+          'authkey' : API.key,
+          'order_id' : id,
+          'status_id':type,
+        }
+    );
+    setState(() {
+      Navigator.of(context).pop();
+      print("POP");
+      var responsed = json.decode(response.body);
+      print(response.body);
+      if(responsed['status']==1){
+        // data = true;
+        load = true;
+      }else
+      if(responsed['status']==2){
+        print("2");
+        load = true;
+        // data = false;
+        getdata(customer_id);
+        Fluttertoast.showToast(msg: responsed['message'].toString());
+      }
+      else{
+        print("else");
+        load  = true;
+        Navigator.pop(context);
+      }
+      // initState();
+    });
+  }
 }
-
 
 class MainBottomSheet extends StatefulWidget {
 
@@ -791,38 +932,52 @@ class _MainBottomSheetState extends State<MainBottomSheet> {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
+                                child: Row(
+                                  children: [
                                     Padding(
-                                      padding: EdgeInsets.only(bottom: 6.0),
-                                      child: Text("Product Details:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),),
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Container(
+                                        width: 70,
+                                        height: 70,
+                                        child: Image.network(data1[0]['img_url'].toString()),
+                                      ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                            width: 200,
-                                            child: Text(data1[0]['name'].toString(),maxLines: 3,style: TextStyle(color: Constants.PRIMARY_COLOR,fontWeight: FontWeight.bold,fontSize: 20),)),
-                                        Container(
-                                          width: 20,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                            // color:Colors.red,
-                                            color: Color(int.parse("0xff"+data1[0]['color_code'].toString())),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: EdgeInsets.only(bottom: 6.0),
+                                            child: Text("Product Details:",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),),
                                           ),
-                                        ),
-                                      ],
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(
+                                                  width: 200,
+                                                  child: Text(data1[0]['name'].toString(),maxLines: 3,style: TextStyle(color: Constants.PRIMARY_COLOR,fontWeight: FontWeight.bold,fontSize: 20),)),
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  // color:Colors.red,
+                                                  color: Color(int.parse("0xff"+data1[0]['color_code'].toString())),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Text("Size : ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                                              Text(data1[0]['size_name'].toString().toUpperCase(),style: TextStyle(fontSize: 16),),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Text("Size : ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
-                                        Text(data1[0]['size_name'].toString().toUpperCase(),style: TextStyle(fontSize: 16),),
-                                      ],
-                                    )
                                   ],
                                 ),
                               ),

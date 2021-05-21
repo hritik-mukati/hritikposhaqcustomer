@@ -258,13 +258,13 @@ class _LineState extends State<Line> {
                 Expanded(child: Text(""),),
                 Text("Dispatched",overflow: TextOverflow.ellipsis,),
                 Expanded(child: Text(" "),),
-                widget.status < 4? Padding(
+                 widget.status == 4? Padding(
                   padding: const EdgeInsets.only(right:8.0),
-                  child: Text("Delivered",overflow: TextOverflow.ellipsis,),
+                  child: Text("Cancelled",overflow: TextOverflow.ellipsis,),
                 )
                     :Padding(
                   padding: const EdgeInsets.only(right:8.0),
-                  child: Text("Canceled",overflow: TextOverflow.ellipsis,),
+                  child: Text("Delivered",overflow: TextOverflow.ellipsis,),
                 ),
                 widget.status<=4?Center():Expanded(child: Text(" "),),
                 widget.status<=4?Center():widget.status ==5? Padding(

@@ -251,8 +251,9 @@ class _DashboardState extends State<Dashboard> {
           for (int i = 0; i < responsed['result'].length; i++) {
             print("INfo banners:");
             print(responsed['result'][i]['img_url'].toString());
-            imageList.add(
-                (NetworkImage(responsed['result'][i]['img_url'].toString())));
+            imageList.add(NetworkImage(responsed['result'][i]['img_url'].toString()));
+            // imageList.add(
+            //     (NetworkImage(responsed['result'][i]['img_url'].toString())));
           }
         } else {
           imageList.add(NetworkImage(
@@ -264,7 +265,7 @@ class _DashboardState extends State<Dashboard> {
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
       imageList.add(
-          "https://t3.ftcdn.net/jpg/02/20/14/38/360_F_220143804_fc4xRygvJ8bn8JPQumtHJieDN4ORNyjs.jpg");
+          NetworkImage("https://t3.ftcdn.net/jpg/02/20/14/38/360_F_220143804_fc4xRygvJ8bn8JPQumtHJieDN4ORNyjs.jpg"));
     }
   }
 
@@ -1205,21 +1206,21 @@ class _DashboardState extends State<Dashboard> {
               height: height / 3.5,
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, bottom: 0.0),
-                // child: getimg
-                //     ? Carousel(
-                //         boxFit: BoxFit.fill,
-                //         images: imageList,
-                //         autoplay: true,
-                //         showIndicator: true,
-                //         dotSize: 5.0,
-                //         dotSpacing: 20.0,
-                //         dotBgColor: Constants.ACCENT_COLOR,
-                //         indicatorBgPadding: 0.0,
-                //         dotColor: Constants.PRIMARY_COLOR,
-                //       )
-                //     : Center(
-                //         child: ProgressDailog().Progress(context),
-                //       ),
+                child: getimg
+                    ? Carousel(
+                        boxFit: BoxFit.fill,
+                        images: imageList,
+                        autoplay: true,
+                        showIndicator: true,
+                        dotSize: 5.0,
+                        dotSpacing: 20.0,
+                        dotBgColor: Constants.ACCENT_COLOR,
+                        indicatorBgPadding: 0.0,
+                        dotColor: Constants.PRIMARY_COLOR,
+                      )
+                    : Center(
+                        child: ProgressDailog().Progress(context),
+                      ),
               ),
             ),
             Center(

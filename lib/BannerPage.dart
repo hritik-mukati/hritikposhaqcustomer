@@ -177,7 +177,7 @@ class _BannerPageState extends State<BannerPage> {
                     child: Row(
                       children: [
                         Icon(Icons.refresh,size: 18,color: Constants.ACCENT_COLOR,),
-                        Text("  Relode",style: TextStyle(color: Constants.ACCENT_COLOR),),
+                        Text("  Reload",style: TextStyle(color: Constants.ACCENT_COLOR),),
                       ],
                     ),
                     color: Constants.PRIMARY_COLOR,

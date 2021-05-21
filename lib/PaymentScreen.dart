@@ -219,10 +219,10 @@ class NetworkErrorScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Do not close the Application,please relode the page!"),
+          Text("Do not close the Application,please reload the page!"),
           RaisedButton(
             child: Text(
-              "Relode",
+              "Reload",
               style: TextStyle(color: Constants.ACCENT_COLOR),
             ),
             color: Constants.PRIMARY_COLOR,

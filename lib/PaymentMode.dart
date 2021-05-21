@@ -40,6 +40,7 @@ class _PaymentModeState extends State<PaymentMode> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Select Payment Mode"),
+        leading: Center(),
       ),
       body: Column(
         children: [
@@ -169,6 +170,8 @@ class _PaymentModeState extends State<PaymentMode> {
         load = true;
         cartCount();
         var responsed = json.decode(response.body);
+        print("___________________________________________");
+        // print(responsed['order'][0]['id']);
         if(responsed['status']==2){
           print("Done");
           var total = 1000;
@@ -192,9 +195,7 @@ class _PaymentModeState extends State<PaymentMode> {
                     FinalPage(responsed['order_id'].toString())));
           }
           else{
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
+            Navigator.of(context).popUntil((route) => route.isFirst);
             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> PaymentScreen(amount: total.toString(),order : order)));
           }
           }else{
